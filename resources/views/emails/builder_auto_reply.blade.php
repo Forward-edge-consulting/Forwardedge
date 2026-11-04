@@ -16,7 +16,7 @@
                         <td style="text-align:center;padding-bottom:24px;">
                             <img src="{{ asset('frontend/assets/images/logos/logo.png') }}" alt="Forward Edge"
                                 width="120" style="display:block;margin:0 auto 16px;">
-                            <h1 style="margin:0;font-size:26px;color:#f8fafc;">Welcome to Forward Edge</h1>
+                            <h1 style="margin:0;font-size:24px;color:#0c1e21;">{{ $subjectLine }}</h1>
                         </td>
                     </tr>
                     <tr>

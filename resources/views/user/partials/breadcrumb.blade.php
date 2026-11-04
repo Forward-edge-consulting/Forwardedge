@@ -8,16 +8,12 @@
     // Map page titles to background images
     $bgImages = [
         'About Us' => 'pic4.jpg',
-        'Academy' => 'picture3.jpg',
         'Services' => 'picture4.jpg',
         'Events and Training' => 'event1.jpg',
-        'Shop' => 'shop.jpg',
         'Gallery' => 'gallery.jpg',
         'Blog' => 'blog.jpg',
         'Contact' => 'contact.jpg',
-        'Course Details'=>'banner1.jpg',
         'Service Details'=>'pic3.jpg',
-        'Product Details'=>'product.jpg',
         'Event Registration'=>'event2.jpg'
     ];
 

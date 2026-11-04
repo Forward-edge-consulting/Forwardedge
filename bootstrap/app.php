@@ -1,9 +1,5 @@
 <?php
 
-use App\Console\Commands\GoogleDriveInit;
-use App\Console\Commands\RetryMailJobs;
-use App\Console\Commands\ResetAutoRejectScholarships;
-use App\Console\Commands\SendAutoRejectApology;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,14 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
-    ->withCommands([
-        GoogleDriveInit::class,
-        RetryMailJobs::class,
-        ResetAutoRejectScholarships::class,
-        SendAutoRejectApology::class,
-    ])
     ->withMiddleware(function (Middleware $middleware): void {
-        // Allow JS to read the CSRF token cookie for AJAX auth.
+        // Allow frontend forms to read the CSRF token cookie.
         $middleware->encryptCookies(except: ['XSRF-TOKEN']);
 
         // Safe environment check at bootstrap time (no container usage)
@@ -40,12 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Existing aliases
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'verify.content.access' => \App\Http\Middleware\VerifyCourseContentAccess::class,
         ]);
 
-        // NEVER redirect to login page - always go home
-        // Users use AJAX auth modal, admins know the secret URL
-        $middleware->redirectGuestsTo('/');
+        $middleware->redirectGuestsTo(fn () => route('admin.login'));
         $middleware->redirectUsersTo('/');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

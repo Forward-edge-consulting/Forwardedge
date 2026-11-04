@@ -1,0 +1,64 @@
+.fe-form-page{padding:48px 0 96px;background:#fff}
+.fe-form-wrap{max-width:600px}
+.fe-form-wrap h1{font-size:clamp(30px,3.4vw,42px);line-height:1.1;letter-spacing:-.03em;font-weight:600;color:#0c1e21;margin:0 0 12px}
+.fe-form-intro{font-size:17px;color:#364e52;margin:0 0 28px;max-width:52ch}
+.fe-form{display:flex;flex-direction:column;gap:20px}
+.fe-form-hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
+.fe-form-field fieldset{border:0;padding:0;margin:0;min-width:0}
+.fe-form-label{display:block;font-size:15px;font-weight:600;color:#0c1e21;margin:0 0 6px;padding:0}
+.fe-form input[type=text],.fe-form input[type=email],.fe-form input[type=tel],.fe-form input[type=number],.fe-form input[type=date],.fe-form select,.fe-form textarea{display:block;width:100%;min-height:48px;padding:11px 14px;font:inherit;font-size:16px;color:#0c1e21;background:#fff;border:1px solid #c9d1d1;border-radius:10px;transition:border-color .14s cubic-bezier(.23,1,.32,1),box-shadow .14s cubic-bezier(.23,1,.32,1)}
+.fe-form textarea{min-height:120px;resize:vertical}
+.fe-form input:focus,.fe-form select:focus,.fe-form textarea:focus{outline:none;border-color:#0876ac;box-shadow:0 0 0 3px rgba(8,118,172,.15)}
+.fe-form-choice{display:flex;align-items:flex-start;gap:10px;min-height:32px;margin:0 0 4px;font-size:16px;font-weight:400;color:#364e52;cursor:pointer}
+.fe-form-choice input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:#0876ac}
+.fe-form-consent{font-size:14px}
+.fe-form-help{font-size:13px;color:#5f7174;margin-top:4px}
+.fe-form-error{font-size:14px;color:#b42318;min-height:0}
+.fe-form-error:empty{display:none}
+.fe-form-button{align-self:flex-start;min-height:48px;padding:12px 26px;font:inherit;font-weight:600;color:#fff;background:#0876ac;border:0;border-radius:10px;cursor:pointer;transition:background-color .14s cubic-bezier(.23,1,.32,1),transform .16s cubic-bezier(.23,1,.32,1)}
+.fe-form-button:active{transform:scale(.97)}
+.fe-form-button:disabled{opacity:.65;cursor:progress}
+.fe-form-button:focus-visible{outline:2px solid #0876ac;outline-offset:3px}
+@media(hover:hover) and (pointer:fine){.fe-form-button:hover:not(:disabled){background:#075c87}}
+.fe-form-feedback{font-size:15px;color:#364e52}
+.fe-form-feedback:empty{display:none}
+.fe-form.is-success .fe-form-feedback{padding:12px 14px;border-radius:10px;color:#1b7a4f;background:rgba(27,122,79,.1)}
+.fe-form.is-error .fe-form-feedback{color:#b42318}
+.fe-form-closed{padding:16px 18px;border-radius:10px;background:#f3f6f6;color:#364e52}
+@media(max-width:575px){.fe-form-button{width:100%;align-self:stretch}}
+@media(prefers-reduced-motion:reduce){.fe-form-button:active{transform:none}}
+
+/* Signup box inside a blog post */
+.fe-blog-signup{margin:40px 0;padding:28px 28px 24px;border:1px solid #c4d9e5;border-radius:14px;background:#e4eff5}
+.fe-blog-signup h3{margin:0 0 6px;font-size:22px;letter-spacing:-.02em;color:#0c1e21}
+.fe-blog-signup>p{margin:0 0 18px;color:#364e52}
+.fe-blog-signup .fe-form{margin-top:16px}
+.fe-blog-signup .fe-form input[type=text],.fe-blog-signup .fe-form input[type=email]{background:#fff}
+.fe-preview-banner{margin:0 0 20px;padding:12px 16px;border-radius:10px;background:#fff4d6;color:#6b4a00;font-size:15px;font-weight:500}
+@media(max-width:575px){.fe-blog-signup{padding:22px 18px}}
+
+/* Success popup shown when a form sends a resource */
+.fe-popup{border:0;padding:0;margin:auto;width:min(460px,calc(100% - 24px));border-radius:22px;background:#fff;box-shadow:0 40px 90px -30px rgba(7,29,42,.6);color:#364e52}
+.fe-popup::backdrop{background:rgba(7,29,42,.7)}
+.fe-popup[open]{animation:fe-popup-in .24s cubic-bezier(.23,1,.32,1)}
+@keyframes fe-popup-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.fe-popup-body{padding:36px 32px 28px;text-align:center}
+.fe-popup-icon{display:inline-grid;place-items:center;width:60px;height:60px;border-radius:50%;background:#fff8e7;color:#2c99d4;margin-bottom:18px}
+.fe-popup h2{margin:0 0 10px;font-size:26px;line-height:1.2;letter-spacing:-.02em;color:#0c1e21}
+.fe-popup p{margin:0 0 22px;font-size:16px;line-height:1.6}
+.fe-popup a.fe-popup-download{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 26px;border-radius:50px;border:1px solid #FDB714;background:#FDB714;color:#0c1e21!important;font-weight:700;text-decoration:none!important}
+.fe-popup-close{display:block;margin:14px auto 0;min-height:44px;padding:0 20px;border:0;background:none;font:inherit;font-weight:600;color:#67787a;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.fe-popup[open]{animation:none}}
+
+/* Booking slot picker */
+.fe-slots{display:block}
+.fe-slot-days,.fe-slot-times{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fe-slot-days{padding:2px}
+.fe-slot-day,.fe-slot-time{min-height:44px;padding:8px 14px;border:1px solid #c9d1d1;border-radius:10px;background:#fff;font:inherit;font-size:14px;font-weight:600;color:#0c1e21;cursor:pointer;transition:background-color .14s,border-color .14s,transform .14s}
+.fe-slot-day:active,.fe-slot-time:active{transform:scale(.97)}
+.fe-slot-day.is-on{background:#153f5d;border-color:#153f5d;color:#fff}
+.fe-slot-time.is-on{background:#FDB714;border-color:#FDB714;color:#0c1e21}
+.fe-slot-times{padding-top:4px;border-top:1px dashed #dbe2e2;margin-top:12px;padding-top:12px}
+.fe-slot-times[hidden]{display:none}
+.fe-slot-note{margin:10px 0 0;font-size:13px;color:#67787a}
+.fe-slot-day:focus-visible,.fe-slot-time:focus-visible{outline:2px solid #2c99d4;outline-offset:2px}

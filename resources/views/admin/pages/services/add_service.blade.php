@@ -1,27 +1,21 @@
 @extends('admin.master_page')
 @section('main')
     <div class="pagetitle">
-        <h1 class="fw-bold">Services</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index">Home</a></li>
-                <li class="breadcrumb-item">Forms</li>
-                <li class="breadcrumb-item active">Create Service</li>
-            </ol>
-        </nav>
+        <h1>Add service</h1>
+        <a href="{{ route('admin.services.index') }}" class="btn btn-outline-secondary">Back to services</a>
     </div>
 
     <section class="section">
         <div class="row">
             <div class="col-lg-12">
-                <form action="{{ route('admin.services.store') }}" method="POST" enctype="multipart/form-data"
+                <form data-unsaved action="{{ route('admin.services.store') }}" method="POST" enctype="multipart/form-data"
                     id="serviceForm">
                     @csrf
 
                     {{-- Service Info --}}
                     <div class="card mb-4 shadow border-0 rounded-3">
                         <div class="card-header bg-gradient-primary text-white fw-bold py-3 rounded-top">
-                            <i class="bi bi-info-circle me-2"></i> Service Info
+                            Service info
                         </div>
                         <div class="card-body p-4">
                             <div class="form-floating mb-4">
@@ -48,7 +42,7 @@
                     {{-- Service Details --}}
                     <div class="card mb-4 shadow border-0 rounded-3">
                         <div class="card-header bg-gradient-secondary text-white fw-bold py-3 rounded-top">
-                            <i class="bi bi-layout-text-sidebar-reverse me-2"></i> Service Details
+                            Content blocks
                         </div>
                         <div class="card-body p-4" id="serviceDetails" style="max-height: 500px; overflow-y: auto;">
 
@@ -87,13 +81,9 @@
                     </div>
 
                     {{-- Actions --}}
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-success rounded-pill px-5 me-2 shadow-sm">
-                            <i class="bi bi-save me-1"></i> Save Service
-                        </button>
-                        <button type="reset" class="btn btn-danger rounded-pill px-5 shadow-sm" id="clearForm">
-                            <i class="bi bi-trash me-1"></i> Clear Form
-                        </button>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <button type="submit" class="btn btn-primary">Save service</button>
+                        <button type="reset" class="btn btn-ghost" id="clearForm">Clear form</button>
                     </div>
                 </form>
             </div>

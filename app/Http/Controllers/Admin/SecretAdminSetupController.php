@@ -76,22 +76,4 @@ class SecretAdminSetupController extends Controller
         return back()->with('success', 'Admin credentials updated successfully!');
     }
 
-    /**
-     * Prevent anyone from becoming admin through normal registration
-     */
-    public static function enforceSingleAdmin(User $user): void
-    {
-        // If someone tries to set themselves as admin, prevent it
-        if ($user->role === 'admin') {
-            $existingAdmin = User::where('role', 'admin')
-                ->where('id', '!=', $user->id)
-                ->exists();
-
-            if ($existingAdmin) {
-                // Another admin already exists, demote this user
-                $user->role = 'user';
-                $user->saveQuietly();
-            }
-        }
-    }
 }

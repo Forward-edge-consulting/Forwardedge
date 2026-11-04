@@ -28,46 +28,14 @@ Progressbar js
 
 (function ($) {
 	"use strict";
-	// Weave Animation Js
-	const target = document.getElementById("tj-weave-anim");
-	function splitTextToSpans(targetElement) {
-		if (targetElement) {
-			const text = targetElement.textContent;
-			targetElement.innerHTML = "";
-
-			for (let character of text) {
-				const span = document.createElement("span");
-				if (character === " ") {
-					span.innerHTML = "&nbsp;";
-				} else {
-					span.textContent = character;
-				}
-				targetElement.appendChild(span);
-			}
-		}
-	}
-	splitTextToSpans(target);
-	// Preloader js
 	$(window).on("load", function () {
-		const tjPreloader = $(".tj-preloader");
-		if (tjPreloader?.length) {
-			setTimeout(function () {
-				tjPreloader.removeClass("is-loading").addClass("is-loaded");
-				setTimeout(function () {
-					tjPreloader.fadeOut(400);
-					wowController();
-					gsapController();
-				}, 700);
-			}, 2000);
-		} else {
-			wowController();
-			gsapController();
-		}
+		wowController();
+		gsapController();
 	});
 
 	/* ------------- Gsap registration Js -------------*/
 	gsap.registerPlugin(ScrollTrigger, ScrollSmoother, ScrollToPlugin);
-	if ($("#smooth-wrapper").length && $("#smooth-content").length) {
+	if ($("#smooth-wrapper").length && $("#smooth-content").length && !document.body.hasAttribute("data-native-scroll")) {
 		gsap.config({
 			nullTargetWarn: false,
 		});
@@ -176,7 +144,7 @@ Progressbar js
 	////////////////////////////////////////////////////
 	// Nice Select Js
 	if ($("select").length > 0) {
-		$("select").niceSelect();
+		$("select:not(.fe-native)").niceSelect();
 	}
 
 	////////////////////////////////////////////////////
@@ -1889,33 +1857,4 @@ Progressbar js
 		$("#price-to").text($("#slider-range").slider("values", 1));
 	}
 
-	// Quantity increase/decrease
-	// increase quantity
-	function tjQuantityController() {
-		jQuery(".tj-cart-plus").on("click", function () {
-			var original_p = jQuery(this).siblings(".tj-cart-input");
-			var p_value = parseInt(original_p.val());
-			if (p_value > 0) {
-				p_value = p_value + 1;
-			} else if (!p_value) {
-				p_value = 1;
-			}
-			var formattedNumber = ("" + p_value).slice(-2);
-			original_p.val(formattedNumber);
-		});
-
-		// decrease quantity
-		jQuery(".tj-cart-minus").on("click", function () {
-			var original_p = jQuery(this).siblings(".tj-cart-input");
-			var p_value = parseInt(original_p.val());
-			if (p_value > 1) {
-				p_value = p_value - 1;
-			} else if (!p_value) {
-				p_value = 1;
-			}
-			var formattedNumber = ("" + p_value).slice(-2);
-			original_p.val(formattedNumber);
-		});
-	}
-	tjQuantityController();
 })(jQuery);

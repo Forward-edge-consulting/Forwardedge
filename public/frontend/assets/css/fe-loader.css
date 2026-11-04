@@ -1,0 +1,14 @@
+/* One loader for every public form: a spinner over the button, skeleton chips while data loads. */
+.fe-loader{position:absolute;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:fe-loader-spin .7s linear infinite}
+.fe-is-loading{position:relative;pointer-events:none;cursor:progress}
+.fe-is-loading>*:not(.fe-loader){opacity:0}
+.fe-turnstile{margin:0}
+.fe-turnstile:empty{display:none}
+
+.fe-skel{display:inline-block;min-width:76px;height:44px;border-radius:10px;background:linear-gradient(90deg,#e8eded 25%,#f3f6f6 50%,#e8eded 75%);background-size:200% 100%;animation:fe-skel-shimmer 1.2s ease-in-out infinite}
+.fe-note-loading{display:flex;align-items:center;gap:8px}
+.fe-note-loading::before{content:"";width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:fe-loader-spin .7s linear infinite}
+
+@keyframes fe-loader-spin{to{transform:rotate(360deg)}}
+@keyframes fe-skel-shimmer{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.fe-loader,.fe-note-loading::before{animation-duration:1.6s}.fe-skel{animation:none}}

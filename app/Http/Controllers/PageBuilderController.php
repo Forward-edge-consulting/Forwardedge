@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Page, Block, Course, Event, CourseSchedule, CourseContent};
+use App\Models\{Page, Block, Event};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\{DB, Storage, Log, Route as RouteFacade};
 use App\Support\PageBlueprint;
+use App\Support\PageTemplates;
+use App\Support\RichText;
+use App\Models\Form;
 use Illuminate\Validation\ValidationException;
 
 class PageBuilderController extends Controller
@@ -16,9 +19,9 @@ class PageBuilderController extends Controller
 
     public function show(string $slug)
     {
-        $page = Page::where('slug', $slug)
-            ->when(app()->environment('production'), fn($q) => $q->where('status', 'published'))
-            ->with(['blocks' => fn($q) => $q->where('is_published', true)->orderBy('order')])
+        $page = Page::forWebsite()->where('slug', $slug)
+            ->where('status', 'published')
+            ->with(['blocks' => fn($q) => $q->where('is_published', true)->whereIn('type', PageBlueprint::allowedTypes())->orderBy('order')])
             ->firstOrFail();
 
         seo()->forPage($page);
@@ -30,19 +33,21 @@ class PageBuilderController extends Controller
 
     public function adminPages()
     {
-        $pages   = Page::with(['pageable'])->latest('updated_at')->paginate(20);
-        $courses = Course::orderBy('title')->get(['id', 'title']);
+        $pages   = Page::forWebsite()->with(['pageable'])->latest('updated_at')->paginate(20);
         $events  = Event::orderBy('title')->get(['id', 'title']);
 
-        return view('admin.pages.page_builder.index', compact('pages', 'courses', 'events'));
+        return view('admin.pages.page_builder.index', compact('pages', 'events'));
     }
 
     public function createPage()
     {
-        $courses = Course::orderBy('title')->get(['id', 'title']);
         $events  = Event::orderBy('title')->get(['id', 'title']);
 
-        return view('admin.pages.page_builder.create', compact('courses', 'events'));
+        return view('admin.pages.page_builder.form', [
+            'page' => new Page(),
+            'events' => $events,
+            'templates' => PageTemplates::all(),
+        ]);
     }
 
     public function storePage(Request $request)
@@ -52,8 +57,9 @@ class PageBuilderController extends Controller
             'slug'       => 'nullable|string|max:255|unique:pages,slug',
             'status'     => 'required|string|in:draft,published',
             'show_on_events' => 'nullable|boolean',
-            'owner_type' => 'nullable|string|in:course,event',
-            'owner_id'   => 'nullable|integer',
+            'template'   => 'nullable|string|in:' . implode(',', PageTemplates::keys()),
+            'owner_type' => 'nullable|string|in:event',
+            'owner_id'   => 'nullable|required_if:owner_type,event|integer|exists:events,id',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:320',
             'meta_keywords'    => 'nullable|string|max:255',
@@ -70,7 +76,6 @@ class PageBuilderController extends Controller
 
         if (!empty($data['owner_type']) && !empty($data['owner_id'])) {
             $pageableClass = match ($data['owner_type']) {
-                'course' => Course::class,
                 'event'  => Event::class,
                 default  => null,
             };
@@ -86,28 +91,35 @@ class PageBuilderController extends Controller
         $data['meta'] = $this->extractMetaFromRequest($request);
         unset($data['meta_title'], $data['meta_description'], $data['meta_keywords'], $data['meta_image'], $data['meta_canonical'], $data['meta_image_file']);
 
-        $page = Page::create($data);
+        $template = $data['template'] ?? 'blank';
+        unset($data['template']);
 
-        return redirect()->route('pb.blocks', $page)->with('success', 'Page created successfully.');
+        $page = Page::create($data);
+        PageTemplates::seed($page, $template);
+
+        return redirect()->route('pb.blocks', $page)->with('success', $template === 'blank'
+            ? 'Page created. Add your first section.'
+            : 'Page created from the template. Edit each section, then publish when it is ready.');
     }
 
     public function editPage(Page $page)
     {
-        $courses = Course::orderBy('title')->get(['id', 'title']);
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
         $events  = Event::orderBy('title')->get(['id', 'title']);
 
-        return view('admin.pages.page_builder.edit', compact('page', 'courses', 'events'));
+        return view('admin.pages.page_builder.form', compact('page', 'events'));
     }
 
     public function updatePage(Request $request, Page $page)
     {
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
         $data = $request->validate([
             'title'      => 'required|string|max:255',
             'slug'       => 'nullable|string|max:255|unique:pages,slug,' . $page->id,
             'status'     => 'required|string|in:draft,published',
             'show_on_events' => 'nullable|boolean',
-            'owner_type' => 'nullable|string|in:course,event',
-            'owner_id'   => 'nullable|integer',
+            'owner_type' => 'nullable|string|in:event',
+            'owner_id'   => 'nullable|required_if:owner_type,event|integer|exists:events,id',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:320',
             'meta_keywords'    => 'nullable|string|max:255',
@@ -124,7 +136,6 @@ class PageBuilderController extends Controller
 
         if (!empty($data['owner_type']) && !empty($data['owner_id'])) {
             $pageableClass = match ($data['owner_type']) {
-                'course' => Course::class,
                 'event'  => Event::class,
                 default  => null,
             };
@@ -153,6 +164,7 @@ class PageBuilderController extends Controller
 
     public function destroyPage(Page $page)
     {
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
         $page->delete();
         return redirect()->route('pb.pages')->with('success', 'Page deleted successfully.');
     }
@@ -161,7 +173,9 @@ class PageBuilderController extends Controller
 
     public function adminBlocks(Page $page)
     {
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
         $blocks = $page->blocks()
+            ->whereIn('type', PageBlueprint::allowedTypes())
             ->orderBy('order')
             ->get()
             ->map(function ($b) {
@@ -172,6 +186,18 @@ class PageBuilderController extends Controller
         $blockTypes = PageBlueprint::allowedTypes();
 
         $variants = [
+            'page_header'  => ['default'],
+            'rich_text'    => ['default'],
+            'stats'        => ['default'],
+            'form'         => ['default'],
+            'events_grid'  => ['default'],
+            'event_facts'  => ['default'],
+            'cta_band'     => ['default'],
+            'faq_list'     => ['default'],
+            'feature_grid' => ['default'],
+            'steps'        => ['default'],
+            'quote_list'   => ['default'],
+            'contact_info' => ['default'],
             'hero'         => ['default', 'minimal', 'with_video'],
             'hero2'        => ['default'],
             'hero3'        => ['default'],
@@ -189,13 +215,11 @@ class PageBuilderController extends Controller
             'logo_slider'  => ['default'],
             'gallary'      => ['grid', 'masonry'],
             'testimonial'  => ['slider', 'grid', 'featured'],
-            'pricing'      => ['default', 'comparison'],
             'faq'          => ['accordion', 'tabs'],
             'closing_cta'  => ['default', 'split'],
-            'table'        => ['default'],
         ];
 
-        $allowedRouteParams = ['course', 'course_id', 'schedule', 'event', 'event_id', 'page', 'page_id', 'slug'];
+        $allowedRouteParams = ['event', 'event_id', 'page', 'page_id', 'slug'];
 
         $internalRoutes = collect(RouteFacade::getRoutes())
             ->filter(fn($route) => $route->getName() && in_array('GET', $route->methods()))
@@ -242,21 +266,11 @@ class PageBuilderController extends Controller
 
         $iconOptions = $this->loadBootstrapIcons();
 
-        $courseCatalog = Course::with(['contents:id,title,course_id'])
-            ->orderBy('title')
-            ->get(['id', 'title'])
-            ->map(function ($course) {
-                return [
-                    'id' => $course->id,
-                    'title' => $course->title,
-                    'contents' => $course->contents->map(function ($content) {
-                        return [
-                            'id' => $content->id,
-                            'title' => $content->title,
-                        ];
-                    })->values(),
-                ];
-            });
+        // Real forms to pick from in a "Form" section, and the event types an events list can filter by.
+        $formOptions = Form::orderBy('name')->get(['id', 'name', 'slug'])
+            ->reject(fn ($f) => $f->slug === 'page-forms')->values();
+        $eventTypes = \App\Models\EventCategory::orderBy('sort_order')->orderBy('name')->pluck('name', 'id');
+        $pickerTypes = PageBlueprint::pickerTypes();
 
         return view('admin.pages.page_builder.blocks.form', compact(
             'page',
@@ -266,12 +280,15 @@ class PageBuilderController extends Controller
             'internalRoutes',
             'routeBindingOptions',
             'iconOptions',
-            'courseCatalog'
+            'formOptions',
+            'eventTypes',
+            'pickerTypes'
         ));
     }
 
     public function storeBlock(Request $request, Page $page)
     {
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
         $type = (string) $request->input('type');
         PageBlueprint::ensureValidType($type);
 
@@ -332,6 +349,7 @@ class PageBuilderController extends Controller
 
     public function updateBlock(Request $request, Block $block)
     {
+        abort_unless(Page::forWebsite()->whereKey($block->page_id)->exists(), 404);
         $type = (string) $request->input('type');
         PageBlueprint::ensureValidType($type);
 
@@ -393,6 +411,7 @@ class PageBuilderController extends Controller
 
     public function destroyBlock(Block $block)
     {
+        abort_unless(Page::forWebsite()->whereKey($block->page_id)->exists(), 404);
         $this->deleteBlockFiles($block->data ?? []);
         $page = $block->page;
         $block->delete();
@@ -406,12 +425,16 @@ class PageBuilderController extends Controller
 
     public function togglePublish(Request $request, Block $block)
     {
+        abort_unless(Page::forWebsite()->whereKey($block->page_id)->exists(), 404);
+        PageBlueprint::ensureValidType($block->type);
         $block->update(['is_published' => $request->boolean('is_published')]);
         return response()->json(['ok' => true, 'is_published' => $block->is_published]);
     }
 
     public function cloneBlock(Block $block)
     {
+        abort_unless(Page::forWebsite()->whereKey($block->page_id)->exists(), 404);
+        PageBlueprint::ensureValidType($block->type);
         $page = $block->page;
         $nextOrder = ((int) $page->blocks()->max('order')) + 10;
 
@@ -434,13 +457,16 @@ class PageBuilderController extends Controller
 
     public function previewPage(Page $page)
     {
-        $page->load(['blocks' => fn($q) => $q->orderBy('order')]);
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
+        $page->load(['blocks' => fn($q) => $q->whereIn('type', PageBlueprint::allowedTypes())->orderBy('order')]);
         seo()->forPage($page);
-        return view('user.pages.dynamic', compact('page'));
+        $pbEdit = request()->boolean('pb_edit');
+        return view('user.pages.dynamic', compact('page', 'pbEdit'));
     }
 
     public function reorderBlocks(Request $request, Page $page)
     {
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
         $order = $request->input('order');
 
         // Defence-in-depth: abort if any submitted ID doesn't belong to this page
@@ -493,7 +519,9 @@ class PageBuilderController extends Controller
 
     public function json(Page $page)
     {
+        abort_unless(Page::forWebsite()->whereKey($page->id)->exists(), 404);
         $blocks = $page->blocks()
+            ->whereIn('type', PageBlueprint::allowedTypes())
             ->orderBy('order')
             ->get()
             ->map(function ($b) {
@@ -509,44 +537,6 @@ class PageBuilderController extends Controller
     private function buildRouteBindingOptions(): array
     {
         $options = [];
-
-        $courseRecords = Course::query()
-            ->orderBy('title')
-            ->get(['id', 'title', 'slug']);
-
-        $courseOptions = $courseRecords
-            ->map(fn($course) => [
-                'value' => (string) $course->id,
-                'label' => $course->title ?: "Course #{$course->id}",
-                'hint'  => $course->slug ? "Slug: {$course->slug}" : null,
-            ])
-            ->all();
-
-        if (!empty($courseOptions)) {
-            $options['course'] = $courseOptions;
-            $options['course_id'] = $courseOptions;
-        }
-
-        $options['schedule'] = CourseSchedule::query()
-            ->with('course:id,title')
-            ->orderBy('start_date')
-            ->get(['id', 'course_id', 'start_date', 'location'])
-            ->map(function ($schedule) {
-                $courseTitle = optional($schedule->course)->title ?: 'Course';
-                $startDate   = $schedule->start_date ? $schedule->start_date->format('M j, Y') : 'TBA';
-                $label       = trim("{$courseTitle} • {$startDate}");
-                $hintParts   = array_filter([
-                    $schedule->location ? "Location: {$schedule->location}" : null,
-                    "ID #{$schedule->id}",
-                ]);
-
-                return [
-                    'value' => (string) $schedule->id,
-                    'label' => $label,
-                    'hint'  => implode(' • ', $hintParts),
-                ];
-            })
-            ->all();
 
         $eventRecords = Event::query()
             ->orderBy('title')
@@ -565,7 +555,7 @@ class PageBuilderController extends Controller
             $options['event_id'] = $eventOptions;
         }
 
-        $pageRecords = Page::query()
+        $pageRecords = Page::forWebsite()
             ->orderBy('title')
             ->get(['id', 'title', 'slug']);
 
@@ -584,15 +574,6 @@ class PageBuilderController extends Controller
 
         $slugOptions = collect();
 
-        $slugOptions = $slugOptions->merge(
-            $courseRecords
-                ->filter(fn($course) => filled($course->slug))
-                ->map(fn($course) => [
-                    'value' => $course->slug,
-                    'label' => ($course->title ?: "Course #{$course->id}") . ' • Course',
-                    'hint'  => "Slug: {$course->slug}",
-                ])
-        );
 
         $slugOptions = $slugOptions->merge(
             $eventRecords
@@ -630,14 +611,16 @@ class PageBuilderController extends Controller
         // Remove empty items from arrays
         $data = $this->removeEmptyArrayItems($data);
 
+        if ($type === 'rich_text' && isset($data['body'])) {
+            $data['body'] = RichText::cleanDocument((string) $data['body']);
+        }
+
         // Type-specific cleaning
         return match ($type) {
-            'pricing'     => $this->cleanPricingData($data),
             'closing_cta' => $this->normalizeClosingCta($data),
             'hero3'       => $this->cleanHero3Data($data),
             'form_dark',
             'form_light'  => $this->normalizeFormFields($data),
-            'table'       => $this->normalizeTableBlock($data),
             default       => $data,
         };
     }
@@ -688,72 +671,8 @@ class PageBuilderController extends Controller
     }
 
     /**
-     * Clean pricing data - ensure at least one plan with non-empty features
+     * Normalize contact form fields
      */
-    private function cleanPricingData(array $data): array
-    {
-        if (!isset($data['plans']) || !is_array($data['plans'])) {
-            throw new \InvalidArgumentException('Pricing block requires at least one plan');
-        }
-
-        $cleanPlans = [];
-
-        foreach ($data['plans'] as $plan) {
-            // Skip plans with no title
-            if (empty($plan['title']) || trim((string) $plan['title']) === '') {
-                continue;
-            }
-
-            // Clean features array
-            if (isset($plan['features']) && is_array($plan['features'])) {
-                $cleanFeatures = [];
-                foreach ($plan['features'] as $feature) {
-                    if (!empty($feature) && trim((string) $feature) !== '') {
-                        $cleanFeatures[] = trim((string) $feature);
-                    }
-                }
-                $plan['features'] = array_values($cleanFeatures);
-            } else {
-                $plan['features'] = [];
-            }
-
-            // Remove old 'period' field if present (legacy cleanup)
-            unset($plan['period']);
-
-            $plan['course_id'] = isset($plan['course_id']) && $plan['course_id'] !== ''
-                ? (int) $plan['course_id']
-                : null;
-            $plan['course_content_id'] = isset($plan['course_content_id']) && $plan['course_content_id'] !== ''
-                ? (int) $plan['course_content_id']
-                : null;
-
-            if ($plan['course_content_id']) {
-                $content = CourseContent::select('id', 'course_id')->find($plan['course_content_id']);
-                if ($content) {
-                    $plan['course_content_id'] = $content->id;
-                    $plan['course_id'] = $content->course_id;
-                } else {
-                    $plan['course_content_id'] = null;
-                }
-            }
-
-            if (empty($plan['course_id']) && empty($plan['course_content_id'])) {
-                throw new \InvalidArgumentException(
-                    'Pricing plan must link to a course or module before it can be saved.'
-                );
-            }
-
-            $cleanPlans[] = $plan;
-        }
-
-        // Ensure at least one valid plan
-        if (empty($cleanPlans)) {
-            throw new \InvalidArgumentException('Pricing block requires at least one plan with a title');
-        }
-
-        $data['plans'] = array_values($cleanPlans);
-        return $data;
-    }
 
     private function normalizeFormFields(array $data): array
     {
@@ -805,50 +724,6 @@ class PageBuilderController extends Controller
         return $data;
     }
 
-    private function normalizeTableBlock(array $data): array
-    {
-        $data['title'] = trim((string) ($data['title'] ?? '')) ?: null;
-        $data['subtitle'] = trim((string) ($data['subtitle'] ?? '')) ?: null;
-
-        $source = $data['table_source'] ?? 'enrollments';
-        $allowedSources = ['enrollments', 'course_contents'];
-        $data['table_source'] = in_array($source, $allowedSources, true) ? $source : 'enrollments';
-
-        $headers = [];
-        if (isset($data['headers']) && is_array($data['headers'])) {
-            foreach ($data['headers'] as $header) {
-                $column = trim((string) ($header['column'] ?? ''));
-                if ($column === '') {
-                    continue;
-                }
-                $headers[] = ['column' => $column];
-            }
-        }
-
-        $count = isset($data['header_count']) ? (int) $data['header_count'] : 0;
-        if ($count < 1) {
-            $count = count($headers);
-        }
-        if ($count < 1) {
-            $count = 1;
-        }
-        if ($count > 8) {
-            $count = 8;
-        }
-
-        if (count($headers) > $count) {
-            $headers = array_slice($headers, 0, $count);
-        }
-
-        $data['headers'] = array_values($headers);
-        $data['header_count'] = $count;
-
-        $allowedFilters = ['any', 'free', 'paid', 'zero'];
-        $filter = $data['amount_filter'] ?? null;
-        $data['amount_filter'] = in_array($filter, $allowedFilters, true) ? $filter : null;
-
-        return $data;
-    }
 
     /**
      * Clean hero3 title segments
@@ -925,6 +800,7 @@ class PageBuilderController extends Controller
             'hero2'  => ['hero_image' => 'blocks/hero2', 'banner_image' => 'blocks/hero2'],
             'hero3'  => ['banner_image' => 'blocks/hero3', 'image' => 'blocks/hero3', 'hero_image' => 'blocks/hero3', 'verified_icon' => 'blocks/hero3'],
             'hero4'  => ['hero_image' => 'blocks/hero4'],
+            'page_header' => ['image' => 'blocks/page_header'],
             'about'  => ['banner_left' => 'blocks/about'],
             'about2' => ['about_image' => 'blocks/about2'],
         ];
@@ -1077,7 +953,7 @@ class PageBuilderController extends Controller
 
     private function assertUniquePageSlug(string $slug, ?int $ignoreId = null): void
     {
-        $query = Page::where('slug', $slug);
+        $query = Page::query()->where('slug', $slug);
         if ($ignoreId) {
             $query->where('id', '!=', $ignoreId);
         }

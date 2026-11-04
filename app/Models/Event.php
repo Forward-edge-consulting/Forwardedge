@@ -23,6 +23,12 @@ class Event extends Model
         'timezone',
         'status',
         'type',
+        'category_id',
+        'highlights',
+        'cta_type',
+        'cta_label',
+        'cta_url',
+        'cta_form_id',
         'price',
         'max_attendees',
         'current_attendees',
@@ -39,6 +45,7 @@ class Event extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'social_links' => 'array',
+        'highlights' => 'array',
         'price' => 'decimal:2',
         'is_featured' => 'boolean'
     ];
@@ -54,9 +61,61 @@ class Event extends Model
         });
     }
 
+    /** Kept for the historical records. Online registration has been retired. */
     public function registrations()
     {
         return $this->hasMany(EventRegistration::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(EventCategory::class, 'category_id');
+    }
+
+    public function ctaForm()
+    {
+        return $this->belongsTo(Form::class, 'cta_form_id');
+    }
+
+    /** Published, and not hidden behind an unpublished or event-hidden page. */
+    public function scopeVisibleOnSite($query)
+    {
+        return $query->where('status', 'published')->where(function ($q) {
+            $q->whereDoesntHave('pages')->orWhereHas('pages', fn ($p) => $p->where('status', 'published')->where('show_on_events', true));
+        });
+    }
+
+    /** Over once its end date (or, with no end date, its start date) has passed. */
+    public function scopePast($query)
+    {
+        return $query->where(fn ($q) => $q->where('end_date', '<', now())
+            ->orWhere(fn ($w) => $w->whereNull('end_date')->where('start_date', '<', now()->startOfDay())));
+    }
+
+    public function scopeNotPast($query)
+    {
+        return $query->where(fn ($q) => $q->where('end_date', '>=', now())
+            ->orWhere(fn ($w) => $w->whereNull('end_date')->where('start_date', '>=', now()->startOfDay())));
+    }
+
+    public function getIsPastAttribute(): bool
+    {
+        $over = $this->end_date ?? $this->start_date;
+
+        return $over ? ($this->end_date ? $over->isPast() : $over->lt(now()->startOfDay())) : false;
+    }
+
+    public function getCategoryLabelAttribute(): string
+    {
+        return $this->category?->name ?? ucfirst((string) $this->type);
+    }
+
+    /** "120 attendees" style chips for the past-events wall. */
+    public function getHighlightLineAttribute(): ?string
+    {
+        $items = collect($this->highlights ?? [])->filter(fn ($h) => filled($h['value'] ?? null) && filled($h['label'] ?? null));
+
+        return $items->isEmpty() ? null : $items->take(2)->map(fn ($h) => $h['value'] . ' ' . strtolower($h['label']))->implode(', ');
     }
 
 

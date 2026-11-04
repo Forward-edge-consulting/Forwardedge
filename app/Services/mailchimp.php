@@ -19,6 +19,7 @@ class Mailchimp
 
         $mc = new ApiClient();
         $mc->setConfig([
+            'timeout' => 10,
             'apiKey' => $apiKey,
             'server' => $server,
         ]);

@@ -2,98 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\Mailchimp\UpsertMember;
 use App\Mail\BuilderFormAutoReply;
 use App\Mail\NewsletterWelcomeMail;
 use App\Models\Block;
+use App\Models\Form;
 use App\Rules\TrustedEmailDomain;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
+use App\Services\FormResponses;
+use App\Support\Turnstile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use MailchimpMarketing\ApiException;
 
+/**
+ * Entry point for the footer, blog sidebar and page-builder form blocks.
+ * Every submission is stored locally. Contacts are imported into Brevo by hand from
+ * Admin > Responses, so nothing depends on a third-party API being up.
+ */
 class NewsletterController extends Controller
 {
-    public function subscribe(Request $request)
+    public function subscribe(Request $request, FormResponses $responses)
     {
+        if (!Turnstile::passes($request)) {
+            if ($request->expectsJson()) {
+                return response()->json(['status' => 'error', 'message' => Turnstile::FAILED_MESSAGE], 422);
+            }
+            throw ValidationException::withMessages(['email' => Turnstile::FAILED_MESSAGE]);
+        }
+
         if (
             $request->expectsJson() ||
             $request->input('source') === 'builder_form' ||
             $request->has('fields') ||
             $request->has('newsletter_form')
         ) {
-            return $this->handleDynamicForm($request);
+            return $this->handleDynamicForm($request, $responses);
         }
 
         $data = $request->validate([
-            'email'        => ['required', 'email:rfc,dns', new TrustedEmailDomain()],
-            'first_name'   => 'nullable|string|max:100',
-            'last_name'    => 'nullable|string|max:100',
-            'double_optin' => 'nullable|boolean',
-            'tags'         => 'nullable|array|max:10',
-            'tags.*'       => 'nullable|string|max:50',
-            'hp_field'     => ['nullable', 'prohibited'],
+            'email'      => ['required', \App\Support\FormFields::emailRule(), new TrustedEmailDomain()],
+            'first_name' => 'nullable|string|max:100',
+            'last_name'  => 'nullable|string|max:100',
+            'consent'    => 'nullable',
+            'consent_text' => 'nullable|string|max:500',
+            'hp_field'   => ['nullable', 'prohibited'],
         ]);
 
-        $email = strtolower($data['email']);
-        $merge = [
-            'FNAME' => $data['first_name'] ?? '',
-            'LNAME' => $data['last_name'] ?? '',
-        ];
-
-        $merge['FNAME'] = $merge['FNAME'] !== '' ? $merge['FNAME'] : 'Subscriber';
-        $merge['LNAME'] = $merge['LNAME'] !== '' ? $merge['LNAME'] : '-';
-
-        try {
-            UpsertMember::dispatchSync($email, $merge, [
-                'double_opt_in' => $data['double_optin'] ?? config('services.mailchimp.double_opt_in'),
-                'tags'          => $data['tags'] ?? ['Website'],
-            ]);
-        } catch (ApiException $e) {
-            $message = $this->mapMailchimpException($e);
-            if ($request->expectsJson()) {
-                return response()->json(['status' => 'error', 'message' => $message], 422);
-            }
-            throw ValidationException::withMessages(['email' => $message]);
+        $fields = [['label' => 'Email', 'name' => 'email', 'type' => 'email', 'value' => $data['email']]];
+        if (filled($data['first_name'] ?? null)) {
+            array_unshift($fields, ['label' => 'First name', 'name' => 'first_name', 'type' => 'text', 'value' => $data['first_name']]);
+        }
+        if (filled($data['last_name'] ?? null)) {
+            $fields[] = ['label' => 'Last name', 'name' => 'last_name', 'type' => 'text', 'value' => $data['last_name']];
         }
 
-        Mail::to($email)->send(new NewsletterWelcomeMail($merge['FNAME'] ?: 'Subscriber'));
-
-        $message = ($data['double_optin'] ?? config('services.mailchimp.double_opt_in'))
-            ? 'Almost done! Please confirm the email we just sent you.'
-            : 'Thanks! You are subscribed 🎉';
-
-        if ($request->expectsJson()) {
-            return response()->json(['status' => 'ok', 'message' => $message]);
-        }
+        $message = $this->store($request, $responses, Form::system('newsletter'), $fields, 'newsletter');
 
         return back()->with('success', $message);
     }
 
-    protected function handleDynamicForm(Request $request)
+    protected function handleDynamicForm(Request $request, FormResponses $responses)
     {
-        if (!$request->has('tags') && $request->filled('form_tags')) {
-            $request->merge([
-                'tags' => collect(explode(',', (string) $request->input('form_tags')))
-                    ->map(fn ($tag) => trim($tag))
-                    ->filter()
-                    ->values()
-                    ->all(),
-            ]);
-        }
-
         if (!$request->has('fields') && $request->has('newsletter_form')) {
-            $forms = $request->input('newsletter_form');
-            $blockId = $request->input('block_id');
-
-            if (!$blockId && is_array($forms)) {
-                $blockId = array_key_first($forms);
-            }
-
+            $blockId = $request->input('block_id') ?: array_key_first((array) $request->input('newsletter_form'));
             $request->merge([
                 'block_id' => $blockId,
                 'fields'   => $this->mapLegacyFieldsToPayload($request, $blockId),
@@ -101,96 +74,113 @@ class NewsletterController extends Controller
         }
 
         $payload = $request->validate([
-            'block_id'       => 'nullable',
-            'fields'         => 'required|array|min:1',
-            'fields.*.label' => 'nullable|string|max:120',
-            'fields.*.name'  => 'required|string|max:60',
-            'fields.*.type'  => 'required|string|in:text,email,tel,textarea',
-            'fields.*.value' => 'nullable|string|max:5000',
+            'block_id'          => 'nullable',
+            'fields'            => 'required|array|min:1',
+            'fields.*.label'    => 'nullable|string|max:120',
+            'fields.*.name'     => 'required|string|max:60',
+            'fields.*.type'     => 'required|string|in:text,email,tel,textarea',
+            'fields.*.value'    => 'nullable|string|max:5000',
             'fields.*.required' => 'nullable|boolean',
-            'tags'           => 'nullable|array|max:10',
-            'tags.*'         => 'nullable|string|max:50',
-            'hp_field'       => ['nullable', 'prohibited'],
+            'consent'           => 'nullable',
+            'consent_text'      => 'nullable|string|max:500',
+            'hp_field'          => ['nullable', 'prohibited'],
         ]);
 
-        $fields = collect($payload['fields']);
-        $emailField = $fields->first(fn ($field) => $field['type'] === 'email' && filled($field['value'] ?? null));
+        $fields = collect($payload['fields'])->all();
+        $emailField = collect($fields)->first(fn ($f) => $f['type'] === 'email' && filled($f['value'] ?? null));
 
         if (!$emailField) {
-            throw ValidationException::withMessages([
-                'fields' => 'Please include an email field in your form.',
-            ]);
+            throw ValidationException::withMessages(['fields' => 'Please include an email field in your form.']);
+        }
+        $this->assertTrustedEmail(trim((string) $emailField['value']));
+
+        $block = isset($payload['block_id']) && is_numeric($payload['block_id']) ? Block::find($payload['block_id']) : null;
+        $mode = is_array($block?->data) ? ($block->data['email_mode'] ?? 'newsletter') : 'newsletter';
+
+        // Footer / blog widgets and newsletter-mode blocks are signups; other blocks are enquiries.
+        $isNewsletter = !$block || $mode === 'newsletter' || empty($mode);
+        $form = Form::system($isNewsletter ? 'newsletter' : 'page-forms');
+
+        $message = $this->store($request, $responses, $form, $fields, $isNewsletter ? 'newsletter' : $mode, $block);
+
+        return $request->expectsJson()
+            ? response()->json(['status' => 'ok', 'message' => $message])
+            : back()->with('success', $message);
+    }
+
+    /** Save the response, then send the (optional) welcome mail. Mail failures never lose the lead. */
+    protected function store(Request $request, FormResponses $responses, Form $form, array $fields, string $mode, ?Block $block = null): string
+    {
+        $rows = [];
+        $email = null;
+        $first = null;
+        $full = null;
+
+        foreach ($fields as $field) {
+            $value = trim((string) ($field['value'] ?? ''));
+            if ($value === '') {
+                continue;
+            }
+            $name = (string) ($field['name'] ?? '');
+            $maps = match (true) {
+                str_contains($name, 'first') => 'FIRSTNAME',
+                str_contains($name, 'last') || str_contains($name, 'surname') => 'LASTNAME',
+                $name === 'name' || $name === 'full_name' => 'FULLNAME',
+                in_array($field['type'] ?? '', ['tel'], true) || str_contains($name, 'phone') => 'SMS',
+                default => '',
+            };
+            $rows[] = [
+                'key'     => $name,
+                'label'   => $field['label'] ?: Str::title(str_replace('_', ' ', $name)),
+                'type'    => $field['type'] ?? 'text',
+                'maps_to' => $maps,
+                'value'   => $value,
+            ];
+            if (($field['type'] ?? '') === 'email' && $email === null) {
+                $email = strtolower($value);
+            }
+            if ($maps === 'FIRSTNAME') {
+                $first = $first ?? $value;
+            }
+            if ($maps === 'FULLNAME') {
+                $full = $full ?? $value;
+            }
         }
 
-        $emailValue = trim((string) $emailField['value']);
+        $lastNames = collect($rows)->firstWhere('maps_to', 'LASTNAME')['value'] ?? '';
+        $displayName = $full ?? (trim(($first ?? '') . ' ' . $lastNames) ?: null);
 
-        if (!filter_var($emailValue, FILTER_VALIDATE_EMAIL)) {
-            throw ValidationException::withMessages([
-                'fields' => 'Enter a valid email address.',
-            ]);
-        }
+        $given = filter_var($request->input('consent'), FILTER_VALIDATE_BOOLEAN) || filled($request->input('consent_text'));
+        $text = $request->input('consent_text') ?: ($given ? $form->setting('consent_text') : null);
 
-        $this->assertTrustedEmail($emailValue);
+        $responses->store($form, $rows, $email, $displayName, $request, ['given' => $given, 'text' => $text]);
 
-        $normalizedMerge = $this->buildMergeFields($fields);
+        $data = $block && is_array($block->data) ? $block->data : [];
 
         try {
-            UpsertMember::dispatchSync(
-                strtolower($emailValue),
-                $normalizedMerge,
-                [
-                    'tags' => !empty($payload['tags']) ? $payload['tags'] : ['Newsletter'],
-                ]
-            );
-        } catch (ApiException $e) {
-            $message = $this->mapMailchimpException($e);
-            if ($request->expectsJson()) {
-                return response()->json(['status' => 'error', 'message' => $message], 422);
+            if ($mode === 'newsletter') {
+                Mail::to($email)->send(new NewsletterWelcomeMail($first ?: $displayName ?: 'there'));
+            } elseif (!in_array($mode, ['none', ''], true)) {
+                Mail::to($email)->send(new BuilderFormAutoReply(
+                    trim((string) ($data['email_subject'] ?? 'Thank you for contacting us')),
+                    trim((string) ($data['email_body'] ?? 'We received your submission and will respond shortly.'))
+                ));
             }
-
-            throw ValidationException::withMessages([
-                'fields' => $message,
-            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Form welcome mail failed', ['error' => $e->getMessage()]);
         }
 
-        $block = isset($payload['block_id']) ? Block::find($payload['block_id']) : null;
-        $blockData = $block && is_array($block->data) ? $block->data : [];
-        $autoReplyMode = $blockData['email_mode'] ?? 'newsletter';
-
-        if ($autoReplyMode === 'newsletter' || empty($autoReplyMode)) {
-            $message = 'Thanks for joining our newsletter! 🎉';
-            Mail::to($emailValue)->send(new NewsletterWelcomeMail($normalizedMerge['FNAME'] ?? 'Subscriber'));
-        } elseif ($autoReplyMode === 'none') {
-            $message = 'Thanks for reaching out! We will be in touch shortly.';
-        } else {
-            $message = 'Thanks for reaching out! Please check your inbox.';
-            $subject = trim((string) ($blockData['email_subject'] ?? 'Thank you for contacting us'));
-            $body = trim((string) ($blockData['email_body'] ?? 'We received your submission and will respond shortly.'));
-
-            Mail::to($emailValue)->send(new BuilderFormAutoReply($subject, $body));
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'status'  => 'ok',
-                'message' => $message,
-            ]);
-        }
-
-        return back()->with('success', $message);
+        return $mode === 'newsletter'
+            ? 'Thanks for subscribing.'
+            : 'Thanks for reaching out. We will be in touch shortly.';
     }
 
     protected function assertTrustedEmail(string $email): void
     {
-        $validator = validator(
-            ['email' => $email],
-            ['email' => ['required', 'email:rfc,dns', new TrustedEmailDomain()]]
-        );
+        $validator = validator(['email' => $email], ['email' => ['required', \App\Support\FormFields::emailRule(), new TrustedEmailDomain()]]);
 
         if ($validator->fails()) {
-            throw ValidationException::withMessages([
-                'fields' => $validator->errors()->first('email'),
-            ]);
+            throw ValidationException::withMessages(['fields' => $validator->errors()->first('email')]);
         }
     }
 
@@ -202,7 +192,6 @@ class NewsletterController extends Controller
 
         $values = Arr::get($request->input('newsletter_form'), $blockId, []);
         $meta   = Arr::get($request->input('field_meta'), $blockId, []);
-
         $fields = [];
 
         foreach ($meta as $name => $info) {
@@ -217,90 +206,10 @@ class NewsletterController extends Controller
 
         if (empty($fields) && is_array($values)) {
             foreach ($values as $name => $value) {
-                $fields[] = [
-                    'label' => Str::title(str_replace('_', ' ', $name)),
-                    'name'  => $name,
-                    'type'  => 'text',
-                    'required' => false,
-                    'value' => $value,
-                ];
+                $fields[] = ['label' => Str::title(str_replace('_', ' ', $name)), 'name' => $name, 'type' => 'text', 'required' => false, 'value' => $value];
             }
         }
 
         return $fields;
-    }
-
-    protected function buildMergeFields($fields): array
-    {
-        $fields = collect($fields);
-
-        $first = $fields->first(function ($field) {
-            return Str::contains(strtolower($field['name'] ?? ''), ['first', 'fname']);
-        });
-
-        $last = $fields->first(function ($field) {
-            return Str::contains(strtolower($field['name'] ?? ''), ['last', 'lname']);
-        });
-
-        $phone = $fields->first(fn ($field) => $field['type'] === 'tel');
-
-        $merge = [
-            'FNAME' => trim((string) ($first['value'] ?? '')),
-            'LNAME' => trim((string) ($last['value'] ?? '')),
-            'PHONE' => trim((string) ($phone['value'] ?? '')),
-        ];
-
-        if ($merge['FNAME'] === '') {
-            $full = $fields->first(function ($field) {
-                $name = strtolower($field['name'] ?? '');
-                $label = strtolower($field['label'] ?? '');
-                return Str::contains($name, ['full_name', 'fullname', 'full-name', 'name'])
-                    || Str::contains($label, ['full name', 'fullname']);
-            });
-
-            if ($full && filled($full['value'] ?? null)) {
-                $parts = preg_split('/\s+/', trim((string) $full['value']));
-                $merge['FNAME'] = $parts[0] ?? '';
-                $merge['LNAME'] = $merge['LNAME'] ?: (implode(' ', array_slice($parts, 1)) ?: '');
-            }
-        }
-
-        $fields->each(function ($field, $index) use (&$merge) {
-            $key = strtoupper(Str::limit(preg_replace('/[^A-Za-z0-9_]/', '', Str::snake($field['name'] ?? 'field')), 10, ''));
-            if ($key === '' || array_key_exists($key, $merge)) {
-                $key = 'FIELD' . ($index + 1);
-            }
-            $merge[$key] = trim((string) ($field['value'] ?? ''));
-        });
-
-        $merge['FNAME'] = $merge['FNAME'] !== '' ? $merge['FNAME'] : 'Subscriber';
-        $merge['LNAME'] = $merge['LNAME'] !== '' ? $merge['LNAME'] : '-';
-
-        return $merge;
-    }
-
-    protected function mapMailchimpException(ApiException $e): string
-    {
-        $detail = '';
-        $body = $e->getResponseBody();
-
-        if (is_object($body) && isset($body->detail)) {
-            $detail = (string) $body->detail;
-        } elseif (is_string($body)) {
-            $detail = $body;
-        } else {
-            $detail = $e->getMessage();
-        }
-
-        $detailLower = strtolower($detail);
-        if (str_contains($detailLower, 'permanently deleted')) {
-            return 'This email unsubscribed previously, so Mailchimp will not add it automatically. Please use a different email or resubscribe via one of our Mailchimp opt-in forms.';
-        }
-
-        if (str_contains($detailLower, 'forgotten email')) {
-            return 'This email was removed from our mailing list and must re-confirm via a Mailchimp form before we can add it again.';
-        }
-
-        return 'We could not subscribe this email right now. Please try again later or contact support.';
     }
 }

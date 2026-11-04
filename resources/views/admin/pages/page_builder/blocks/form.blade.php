@@ -25,40 +25,51 @@
 @section('main')
 @php
 $blockMeta = [
-    'hero'             => ['icon' => 'bi-star-fill',                    'color' => '#6366f1'],
-    'hero2'            => ['icon' => 'bi-layout-text-window-reverse',   'color' => '#8b5cf6'],
-    'hero3'            => ['icon' => 'bi-badge-hd',                     'color' => '#7c3aed'],
-    'hero4'            => ['icon' => 'bi-rocket-takeoff',               'color' => '#a855f7'],
-    'program_overview' => ['icon' => 'bi-journal-bookmark',             'color' => '#0ea5e9'],
-    'overview'         => ['icon' => 'bi-grid-3x3-gap',                 'color' => '#0284c7'],
-    'overview2'        => ['icon' => 'bi-collection',                   'color' => '#0369a1'],
-    'about'            => ['icon' => 'bi-people',                       'color' => '#059669'],
-    'about2'           => ['icon' => 'bi-person-lines-fill',            'color' => '#047857'],
-    'sections'         => ['icon' => 'bi-layout-three-columns',         'color' => '#d97706'],
-    'sections2'        => ['icon' => 'bi-layout-wtf',                   'color' => '#b45309'],
-    'marquees'         => ['icon' => 'bi-arrows-move',                  'color' => '#dc2626'],
-    'logo_slider'      => ['icon' => 'bi-images',                       'color' => '#9333ea'],
-    'gallary'          => ['icon' => 'bi-camera',                       'color' => '#ec4899'],
-    'testimonial'      => ['icon' => 'bi-chat-quote',                   'color' => '#f59e0b'],
-    'pricing'          => ['icon' => 'bi-tag',                          'color' => '#10b981'],
-    'faq'              => ['icon' => 'bi-question-circle',              'color' => '#6b7280'],
-    'closing_cta'      => ['icon' => 'bi-megaphone',                    'color' => '#ef4444'],
-    'form_dark'        => ['icon' => 'bi-ui-checks',                    'color' => '#374151'],
-    'form_light'       => ['icon' => 'bi-ui-checks-grid',              'color' => '#6b7280'],
-    'table'            => ['icon' => 'bi-table',                        'color' => '#1d4ed8'],
+    'page_header'      => ['icon' => 'bi-layout-text-sidebar', 'color' => '#5f7174', 'label' => 'Page header'],
+    'rich_text'        => ['icon' => 'bi-text-paragraph',      'color' => '#5f7174', 'label' => 'Text'],
+    'stats'            => ['icon' => 'bi-123',                 'color' => '#5f7174', 'label' => 'Numbers'],
+    'form'             => ['icon' => 'bi-ui-checks-grid',      'color' => '#5f7174', 'label' => 'Form'],
+    'events_grid'      => ['icon' => 'bi-calendar-event',      'color' => '#5f7174', 'label' => 'Events list'],
+    'event_facts'      => ['icon' => 'bi-geo-alt',             'color' => '#5f7174', 'label' => 'Event details'],
+    'cta_band'         => ['icon' => 'bi-megaphone',           'color' => '#5f7174', 'label' => 'Call to action band'],
+    'faq_list'         => ['icon' => 'bi-patch-question',      'color' => '#5f7174', 'label' => 'Questions (FAQ)'],
+    'feature_grid'     => ['icon' => 'bi-grid-3x2-gap',        'color' => '#5f7174', 'label' => 'Feature cards'],
+    'steps'            => ['icon' => 'bi-list-ol',             'color' => '#5f7174', 'label' => 'Steps'],
+    'quote_list'       => ['icon' => 'bi-chat-quote',          'color' => '#5f7174', 'label' => 'Testimonials'],
+    'contact_info'     => ['icon' => 'bi-telephone',           'color' => '#5f7174', 'label' => 'Contact details'],
+    'hero'             => ['icon' => 'bi-star-fill',                    'color' => '#5f7174'],
+    'hero2'            => ['icon' => 'bi-layout-text-window-reverse',   'color' => '#5f7174'],
+    'hero3'            => ['icon' => 'bi-badge-hd',                     'color' => '#5f7174'],
+    'hero4'            => ['icon' => 'bi-rocket-takeoff',               'color' => '#5f7174'],
+    'program_overview' => ['icon' => 'bi-journal-bookmark',             'color' => '#5f7174'],
+    'overview'         => ['icon' => 'bi-grid-3x3-gap',                 'color' => '#5f7174'],
+    'overview2'        => ['icon' => 'bi-collection',                   'color' => '#5f7174'],
+    'about'            => ['icon' => 'bi-people',                       'color' => '#5f7174'],
+    'about2'           => ['icon' => 'bi-person-lines-fill',            'color' => '#5f7174'],
+    'sections'         => ['icon' => 'bi-layout-three-columns',         'color' => '#5f7174'],
+    'sections2'        => ['icon' => 'bi-layout-wtf',                   'color' => '#5f7174'],
+    'marquees'         => ['icon' => 'bi-arrows-move',                  'color' => '#5f7174'],
+    'logo_slider'      => ['icon' => 'bi-images',                       'color' => '#5f7174'],
+    'gallary'          => ['icon' => 'bi-camera',                       'color' => '#5f7174'],
+    'testimonial'      => ['icon' => 'bi-chat-quote',                   'color' => '#5f7174'],
+    'faq'              => ['icon' => 'bi-question-circle',              'color' => '#5f7174'],
+    'closing_cta'      => ['icon' => 'bi-megaphone',                    'color' => '#5f7174'],
+    'form_dark'        => ['icon' => 'bi-ui-checks',                    'color' => '#5f7174'],
+    'form_light'       => ['icon' => 'bi-ui-checks-grid',              'color' => '#5f7174'],
 ];
 @endphp
-    <div class="container py-5">
+    <div class="container py-5 pb-wide">
 
         {{-- Header --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="pagetitle">
             <div>
-                <h3 class="mb-0">Page Builder • {{ $page->title }}</h3>
-                <div class="text-muted small">Drag blocks to reorder • click edit to configure • changes save instantly</div>
+                <h1>{{ $page->title }}</h1>
+                <p class="fe-title-sub">Drag or use the arrows to reorder. Edits save as you go.</p>
             </div>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-secondary" href="{{ route('page.show', $page->slug) }}" target="_blank">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>Live Page
+                <a class="btn btn-outline-secondary" href="{{ route('pb.pages.edit', $page) }}">Page settings</a>
+                <a class="btn btn-outline-secondary" href="{{ route('page.show', $page->slug) }}" target="_blank" rel="noopener">
+                    View live <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
                 </a>
             </div>
         </div>
@@ -78,13 +89,15 @@ $blockMeta = [
             </div>
         @endif
 
+        <div class="pb-split">
+        <div class="pb-left">
         {{-- Add Block toolbar --}}
         <div class="card rounded-12 shadow-soft mb-4 p-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="text-muted small">
                     Sections on this page: <strong>{{ $blocks->count() }}</strong>
                 </div>
-                <button class="btn btn-dark" id="openBlockPickerBtn">
+                <button class="btn btn-primary" id="openBlockPickerBtn">
                     <i class="bi bi-plus-circle me-1"></i> Add Block
                 </button>
             </div>
@@ -94,13 +107,14 @@ $blockMeta = [
         <div class="card rounded-12 shadow-soft">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="fw-semibold">Blocks</div>
-                <small class="text-muted">Drag to reorder • order saves automatically</small>
+                <small class="text-muted">Order saves automatically</small>
             </div>
             <div class="card-body p-0">
+                <div id="blockLive" class="visually-hidden" role="status" aria-live="polite"></div>
                 <ul class="list-group list-group-flush" id="blockList">
                     @forelse($blocks as $b)
                         @php
-                            $meta = $blockMeta[$b->type] ?? ['icon' => 'bi-puzzle', 'color' => '#6b7280'];
+                            $meta = $blockMeta[$b->type] ?? ['icon' => 'bi-puzzle', 'color' => '#5f7174'];
                             $preview = \Illuminate\Support\Str::limit(
                                 $b->data['title'] ?? $b->data['subtitle'] ?? $b->data['text']
                                     ?? ($b->data['items'][0]['title'] ?? null)
@@ -111,7 +125,7 @@ $blockMeta = [
                         @endphp
                         <li class="list-group-item px-3 py-3 block-row" draggable="true" data-id="{{ $b->id }}">
                             <div class="d-flex align-items-center gap-3">
-                                <span class="drag-handle text-muted" style="cursor:grab;user-select:none" title="Drag to reorder">☰</span>
+                                <span class="drag-handle text-muted" style="cursor:grab;user-select:none" title="Drag to reorder" aria-hidden="true"><i class="bi bi-grip-vertical"></i></span>
 
                                 {{-- Coloured type icon --}}
                                 <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
@@ -122,7 +136,7 @@ $blockMeta = [
                                 {{-- Info --}}
                                 <div class="flex-grow-1" style="min-width:0">
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                                        <span class="fw-semibold text-capitalize">{{ str_replace('_', ' ', $b->type) }}</span>
+                                        <span class="fw-semibold">{{ $meta['label'] ?? ucfirst(str_replace('_', ' ', $b->type)) }}</span>
                                         @if($b->variant && $b->variant !== 'default')
                                             <span class="badge bg-secondary-subtle text-secondary fw-normal">{{ $b->variant }}</span>
                                         @endif
@@ -136,6 +150,10 @@ $blockMeta = [
 
                                 {{-- Actions --}}
                                 <div class="d-flex gap-1 flex-shrink-0">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-action="move-up"
+                                            aria-label="Move block up" title="Move up"><i class="bi bi-arrow-up" aria-hidden="true"></i></button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-action="move-down"
+                                            aria-label="Move block down" title="Move down"><i class="bi bi-arrow-down" aria-hidden="true"></i></button>
                                     <button class="btn btn-outline-secondary btn-sm"
                                             data-action="toggle-publish"
                                             data-id="{{ $b->id }}"
@@ -169,22 +187,29 @@ $blockMeta = [
             </div>
         </div>
 
-        {{-- Live preview pane --}}
-        <div class="mt-3">
-            <button class="btn btn-outline-secondary btn-sm" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#previewPane" id="togglePreviewBtn">
-                <i class="bi bi-eye me-1"></i> Live Preview
-            </button>
-            <div class="collapse mt-2" id="previewPane">
-                <div class="card shadow-soft rounded-12 overflow-hidden" style="height:650px">
-                    <iframe id="previewFrame"
-                            src="{{ route('pb.blocks.preview', $page) }}"
-                            style="width:100%;height:100%;border:0"
+        </div>{{-- /pb-left --}}
+
+        {{-- Live preview: click a section to edit it --}}
+        <div class="pb-right">
+            <div class="pb-preview" id="pbPreview">
+                <div class="pb-preview-bar">
+                    <span class="fe-label-sm mb-0">Live preview</span>
+                    <div class="pb-devices" role="group" aria-label="Preview size">
+                        <button type="button" class="btn btn-sm btn-outline-secondary is-active" data-device="100%" aria-pressed="true">Desktop</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-device="820px" aria-pressed="false">Tablet</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-device="390px" aria-pressed="false">Phone</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="pbReload" aria-label="Refresh preview" title="Refresh"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="pb-preview-stage">
+                    <iframe id="previewFrame" title="Page preview"
+                            src="{{ route('pb.blocks.preview', $page) }}?pb_edit=1"
                             sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
                 </div>
+                <p class="be-hint">Click any section in the preview to edit it. Drafts are included.</p>
             </div>
         </div>
-
+        </div>{{-- /pb-split --}}
     </div>
 
     {{-- ============== Block Picker Modal ============== --}}
@@ -247,7 +272,7 @@ $blockMeta = [
                 {{-- Sticky footer --}}
                 <div class="border-top p-3 d-flex gap-2 justify-content-end bg-white flex-shrink-0">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-                    <button type="submit" class="btn btn-dark" id="modalSubmit">Save</button>
+                    <button type="submit" class="btn btn-primary" id="modalSubmit">Save</button>
                 </div>
             </form>
         </div>
@@ -260,33 +285,59 @@ $blockMeta = [
     <script>
         /* ====== CONFIG ====== */
         const VARIANTS = @json($variants);
+        const PICKER_TYPES = @json($pickerTypes ?? []);
+        const FORM_OPTIONS = @json($formOptions ?? []);
+        const EVENT_TYPES = @json($eventTypes ?? []);
         const STORAGE_ROOT = @json(rtrim(asset('storage'), '/'));
 
         /* ====== BLOCK TYPE METADATA (icons + colors for cards & picker) ====== */
+        const NEW_TYPES = ['page_header', 'rich_text', 'stats', 'form', 'events_grid', 'event_facts', 'cta_band', 'faq_list', 'feature_grid', 'steps', 'quote_list', 'contact_info'];
         const BLOCK_TYPE_META = {
-            hero:             { icon: 'bi-star-fill',                   color: '#6366f1', label: 'Hero' },
-            hero2:            { icon: 'bi-layout-text-window-reverse',  color: '#8b5cf6', label: 'Hero 2' },
-            hero3:            { icon: 'bi-badge-hd',                    color: '#7c3aed', label: 'Hero 3' },
-            hero4:            { icon: 'bi-rocket-takeoff',              color: '#a855f7', label: 'Hero 4' },
-            program_overview: { icon: 'bi-journal-bookmark',            color: '#0ea5e9', label: 'Programme Overview' },
-            overview:         { icon: 'bi-grid-3x3-gap',                color: '#0284c7', label: 'Overview' },
-            overview2:        { icon: 'bi-collection',                  color: '#0369a1', label: 'Overview 2' },
-            about:            { icon: 'bi-people',                      color: '#059669', label: 'About' },
-            about2:           { icon: 'bi-person-lines-fill',           color: '#047857', label: 'About 2' },
-            sections:         { icon: 'bi-layout-three-columns',        color: '#d97706', label: 'Sections' },
-            sections2:        { icon: 'bi-layout-wtf',                  color: '#b45309', label: 'Sections 2' },
-            marquees:         { icon: 'bi-arrows-move',                 color: '#dc2626', label: 'Marquee' },
-            logo_slider:      { icon: 'bi-images',                      color: '#9333ea', label: 'Logo Slider' },
-            gallary:          { icon: 'bi-camera',                      color: '#ec4899', label: 'Gallery' },
-            testimonial:      { icon: 'bi-chat-quote',                  color: '#f59e0b', label: 'Testimonial' },
-            pricing:          { icon: 'bi-tag',                         color: '#10b981', label: 'Pricing' },
-            faq:              { icon: 'bi-question-circle',             color: '#6b7280', label: 'FAQ' },
-            closing_cta:      { icon: 'bi-megaphone',                   color: '#ef4444', label: 'Closing CTA' },
-            form_dark:        { icon: 'bi-ui-checks',                   color: '#374151', label: 'Form (Dark)' },
-            form_light:       { icon: 'bi-ui-checks-grid',              color: '#6b7280', label: 'Form (Light)' },
-            table:            { icon: 'bi-table',                       color: '#1d4ed8', label: 'Table' },
+            page_header:      { icon: 'bi-layout-text-sidebar',         color: '#5f7174', label: 'Page header' },
+            rich_text:        { icon: 'bi-text-paragraph',              color: '#5f7174', label: 'Text' },
+            stats:            { icon: 'bi-123',                         color: '#5f7174', label: 'Numbers' },
+            form:             { icon: 'bi-ui-checks-grid',              color: '#5f7174', label: 'Form' },
+            events_grid:      { icon: 'bi-calendar-event',              color: '#5f7174', label: 'Events list' },
+            event_facts:      { icon: 'bi-geo-alt',                     color: '#5f7174', label: 'Event details' },
+            cta_band:         { icon: 'bi-megaphone',                   color: '#5f7174', label: 'Call to action band' },
+            faq_list:         { icon: 'bi-patch-question',              color: '#5f7174', label: 'Questions (FAQ)' },
+            feature_grid:     { icon: 'bi-grid-3x2-gap',                color: '#5f7174', label: 'Feature cards' },
+            steps:            { icon: 'bi-list-ol',                     color: '#5f7174', label: 'Steps' },
+            quote_list:       { icon: 'bi-chat-quote',                  color: '#5f7174', label: 'Testimonials' },
+            contact_info:     { icon: 'bi-telephone',                   color: '#5f7174', label: 'Contact details' },
+            hero:             { icon: 'bi-star-fill',                   color: '#5f7174', label: 'Hero' },
+            hero2:            { icon: 'bi-layout-text-window-reverse',  color: '#5f7174', label: 'Hero 2' },
+            hero3:            { icon: 'bi-badge-hd',                    color: '#5f7174', label: 'Hero 3' },
+            hero4:            { icon: 'bi-rocket-takeoff',              color: '#5f7174', label: 'Hero 4' },
+            program_overview: { icon: 'bi-journal-bookmark',            color: '#5f7174', label: 'Programme Overview' },
+            overview:         { icon: 'bi-grid-3x3-gap',                color: '#5f7174', label: 'Overview' },
+            overview2:        { icon: 'bi-collection',                  color: '#5f7174', label: 'Overview 2' },
+            about:            { icon: 'bi-people',                      color: '#5f7174', label: 'About' },
+            about2:           { icon: 'bi-person-lines-fill',           color: '#5f7174', label: 'About 2' },
+            sections:         { icon: 'bi-layout-three-columns',        color: '#5f7174', label: 'Sections' },
+            sections2:        { icon: 'bi-layout-wtf',                  color: '#5f7174', label: 'Sections 2' },
+            marquees:         { icon: 'bi-arrows-move',                 color: '#5f7174', label: 'Marquee' },
+            logo_slider:      { icon: 'bi-images',                      color: '#5f7174', label: 'Logo Slider' },
+            gallary:          { icon: 'bi-camera',                      color: '#5f7174', label: 'Gallery' },
+            testimonial:      { icon: 'bi-chat-quote',                  color: '#5f7174', label: 'Testimonial' },
+            faq:              { icon: 'bi-question-circle',             color: '#5f7174', label: 'FAQ' },
+            closing_cta:      { icon: 'bi-megaphone',                   color: '#5f7174', label: 'Closing CTA' },
+            form_dark:        { icon: 'bi-ui-checks',                   color: '#5f7174', label: 'Form (Dark)' },
+            form_light:       { icon: 'bi-ui-checks-grid',              color: '#5f7174', label: 'Form (Light)' },
         };
         const BLOCK_DESCRIPTIONS = {
+            page_header:      'The top of a page: small label, headline, intro, buttons and an optional image.',
+            rich_text:        'Headings, paragraphs, lists, quotes and links. Write like in a document.',
+            stats:            'A row of big numbers with labels, such as attendees, speakers or years.',
+            form:             'A form you built in Forms, with a heading and intro. Responses go to your inbox.',
+            events_grid:      'A list of your events. Choose upcoming or past, and filter by type.',
+            event_facts:      'Date, place and type of the event this page is linked to.',
+            cta_band:         'A bold closing band with a headline and one or two buttons.',
+            faq_list:         'Common questions that open and close, in the same style as the rest of the page.',
+            feature_grid:     'A grid of cards for services, benefits or what is included. Each can link somewhere.',
+            steps:            'A numbered process, such as how it works or what happens after you get in touch.',
+            quote_list:       'What clients or participants say about you, with their name and role.',
+            contact_info:     'Email, phone, address and opening hours, each as a tappable line.',
             hero:             'Full-width hero with headline, CTA buttons, and a large banner image.',
             hero2:            'Split-layout hero with image on one side and text on the other.',
             hero3:            'Compact announcement banner with badge icon and verified marker.',
@@ -302,46 +353,48 @@ $blockMeta = [
             logo_slider:      'Infinite logo/brand slider strip.',
             gallary:          'Photo gallery in grid or masonry layout.',
             testimonial:      'Testimonials in slider, grid, or featured card layout.',
-            pricing:          'Pricing plans with features list, linked to courses.',
             faq:              'Accordion or tabbed FAQ section.',
             closing_cta:      'Bottom-of-page call-to-action with one or more buttons.',
             form_dark:        'Contact/lead capture form on a dark background.',
             form_light:       'Contact/lead capture form on a light background.',
-            table:            'Dynamic data table (enrollments or course content list).',
         };
         const APP_ORIGIN = @json(rtrim(url('/'), '/'));
         const PUBLIC_ROOT = STORAGE_ROOT + '/';
         const INTERNAL_ROUTES = @json($internalRoutes ?? []);
         const ROUTE_PARAM_OPTIONS = @json($routeBindingOptions ?? []);
         const ICON_OPTIONS = @json($iconOptions ?? []);
-        const COURSE_CATALOG = @json(($courseCatalog ?? collect())->values());
-        const TABLE_COLUMN_OPTIONS = {
-            enrollments: [
-                { value: 'user_photo', label: 'Photo' },
-                { value: 'id', label: 'ID' },
-                { value: 'enrollment_id', label: 'Enrollment ID' },
-                { value: 'user_name', label: 'Student Name' },
-                { value: 'user_email', label: 'Email' },
-                { value: 'nationality', label: 'Country (with Flag)' },
-                { value: 'course_title', label: 'Course' },
-                { value: 'schedule_dates', label: 'Schedule' },
-                { value: 'payment_plan', label: 'Plan' },
-                { value: 'total_amount', label: 'Amount' },
-                { value: 'balance', label: 'Balance' },
-                { value: 'status', label: 'Status' },
-                { value: 'verification_status', label: 'Verified' },
-                { value: 'created_at', label: 'Enrolled Date' },
-            ],
-            course_contents: [
-                { value: 'id', label: 'Content ID' },
-                { value: 'title', label: 'Title' },
-                { value: 'type', label: 'Type' },
-                { value: 'price', label: 'Price' },
-                { value: 'discount_price', label: 'Discount Price' },
-                { value: 'order', label: 'Order' },
-                { value: 'created_at', label: 'Created Date' },
-            ],
-        };
+
+
+        /* ====== LIVE PREVIEW ====== */
+        function pbRefreshPreview() {
+            const f = document.getElementById('previewFrame');
+            if (!f || !f.contentWindow) return;
+            let y = 0;
+            try { y = f.contentWindow.scrollY; } catch (e) {}
+            f.addEventListener('load', () => { try { f.contentWindow.scrollTo(0, y); } catch (e) {} }, { once: true });
+            try { f.contentWindow.location.reload(); } catch (e) { f.src = f.src; }
+        }
+        function pbSelectInPreview(id) {
+            const f = document.getElementById('previewFrame');
+            try { f.contentWindow.postMessage({ pbSelect: id }, window.location.origin); } catch (e) {}
+        }
+        window.addEventListener('message', (e) => {
+            if (e.origin !== window.location.origin || !e.data || e.data.pbEdit === undefined) return;
+            const row = document.querySelector(`.block-row[data-id="${e.data.pbEdit}"]`);
+            if (!row) return;
+            row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            row.querySelector('[data-action="edit"]')?.click();
+        });
+        document.addEventListener('click', (e) => {
+            const edit = e.target.closest('.block-row [data-action="edit"]');
+            if (edit) pbSelectInPreview(parseInt(edit.closest('.block-row').dataset.id, 10));
+            const dev = e.target.closest('[data-device]');
+            if (dev) {
+                document.querySelectorAll('[data-device]').forEach(b => { b.classList.toggle('is-active', b === dev); b.setAttribute('aria-pressed', b === dev ? 'true' : 'false'); });
+                document.getElementById('previewFrame').style.width = dev.dataset.device;
+            }
+            if (e.target.closest('#pbReload')) pbRefreshPreview();
+        });
 
         /* ====== UTILITIES ====== */
         function html(markup) {
@@ -403,25 +456,22 @@ $blockMeta = [
   </label>
   <div class="link-picker border rounded-12 p-3" data-link-picker data-name="${name}">
     <div class="row g-2 align-items-center mb-2">
-      <div class="col-sm-6">
-        <select class="form-select form-select-sm" data-link-picker-mode>
+      <div class="col-12">
+        <select class="form-select form-select-sm" data-link-picker-mode aria-label="Link source">
           <option value="external" selected>External URL</option>
-          <option value="internal">Internal Route</option>
+          <option value="internal">Internal page</option>
         </select>
-      </div>
-      <div class="col-sm-6 text-sm-end">
-        <small class="text-muted">Choose link source</small>
       </div>
     </div>
     <div data-link-picker-external>
-      <input type="url" class="form-control" placeholder="${placeholder}">
+      <input type="text" inputmode="url" autocapitalize="none" spellcheck="false" class="form-control" placeholder="${placeholder}">
     </div>
     <div data-link-picker-internal class="d-none mt-2">
       <select class="form-select" data-link-picker-route>
         <option value="">Select route</option>
       </select>
       <small class="text-muted d-block mt-1" data-link-picker-hint>
-        Route placeholders like {course} still need an actual value.
+        Route placeholders like {event} still need an actual value.
       </small>
     </div>
     <div data-link-picker-params class="mt-2 d-none">
@@ -433,172 +483,13 @@ $blockMeta = [
 </div>`;
         }
 
-        function getCourseCatalog() {
-            return Array.isArray(COURSE_CATALOG) ? COURSE_CATALOG : [];
-        }
 
-        function buildCourseOptions(selectedValue = '') {
-            const options = ['<option value="">No course link</option>'];
-            getCourseCatalog().forEach(course => {
-                const selected = selectedValue && String(selectedValue) === String(course.id) ? 'selected' : '';
-                options.push(`<option value="${course.id}" ${selected}>${course.title}</option>`);
-            });
-            return options.join('');
-        }
 
-        function buildContentOptions(courseId, selectedValue = '') {
-            const options = ['<option value="">Select module</option>'];
-            const course = getCourseCatalog().find(c => String(c.id) === String(courseId));
-            if (course && Array.isArray(course.contents)) {
-                course.contents.forEach(content => {
-                    const selected = selectedValue && String(selectedValue) === String(content.id) ? 'selected' : '';
-                    options.push(`<option value="${content.id}" ${selected}>${content.title}</option>`);
-                });
-            }
-            return options.join('');
-        }
 
-        function hydratePlanCourseSelectors(scope) {
-            const items = scope.querySelectorAll('[data-repeater][data-name="plans"] [data-repeater-item]');
-            items.forEach(item => {
-                const courseSelect = item.querySelector('[data-plan-course]');
-                const contentSelect = item.querySelector('[data-plan-content]');
 
-                if (courseSelect) {
-                    const current = courseSelect.value || courseSelect.dataset.selected || '';
-                    courseSelect.innerHTML = buildCourseOptions(current);
-                    courseSelect.value = current;
-                    courseSelect.dataset.selected = courseSelect.value;
-                }
 
-                if (contentSelect) {
-                    const courseId = courseSelect ? courseSelect.value : '';
-                    const current = contentSelect.value || contentSelect.dataset.selected || '';
-                    contentSelect.innerHTML = buildContentOptions(courseId, current);
-                    contentSelect.value = current;
-                    contentSelect.dataset.selected = contentSelect.value;
-                }
-            });
-        }
 
-        function initPricingPlanCourseBindings(scope) {
-            const plansRep = scope.querySelector('[data-repeater][data-name="plans"]');
-            if (!plansRep) return;
 
-            const hydrate = () => hydratePlanCourseSelectors(scope);
-            hydrate();
-            setTimeout(hydrate, 250);
-
-            if (plansRep.dataset.courseBindingReady === '1') {
-                return;
-            }
-
-            plansRep.dataset.courseBindingReady = '1';
-
-            plansRep.addEventListener('change', (event) => {
-                if (event.target.matches('[data-plan-course]')) {
-                    const wrap = event.target.closest('[data-repeater-item]');
-                    const contentSelect = wrap?.querySelector('[data-plan-content]');
-                    if (contentSelect) {
-                        contentSelect.value = '';
-                        hydrate();
-                    }
-                }
-            });
-
-            const observer = new MutationObserver(() => {
-                setTimeout(hydrate, 60);
-            });
-            observer.observe(plansRep, { childList: true, subtree: true });
-        }
-
-        function buildTableColumnOptions(table, selectedValue = '') {
-            const cols = TABLE_COLUMN_OPTIONS[table] || [];
-            const options = ['<option value="">Select column</option>'];
-            cols.forEach(col => {
-                const selected = String(selectedValue) === String(col.value) ? 'selected' : '';
-                options.push(`<option value="${col.value}" ${selected}>${col.label}</option>`);
-            });
-            return options.join('');
-        }
-
-        function refreshTableColumnSelects(scope, table) {
-            scope.querySelectorAll('[data-table-column-select]').forEach(select => {
-                const current = select.value || select.dataset.selected || '';
-                select.innerHTML = buildTableColumnOptions(table, current);
-                select.value = current;
-                select.dataset.selected = select.value;
-            });
-        }
-
-        function initTableBlockBindings(scope) {
-            const sourceSelect = scope.querySelector('[data-table-source]');
-            const countInput = scope.querySelector('[data-header-count]');
-            const repeater = scope.querySelector('.repeater[data-name="headers"]');
-            const addBtn = scope.querySelector('[data-repeater-add="headers"]');
-            const enrollmentsOnly = scope.querySelector('[data-enrollment-only]');
-
-            if (!sourceSelect || !countInput || !repeater || !addBtn) return;
-
-            const clampCount = (value) => {
-                let count = parseInt(value, 10);
-                if (!Number.isFinite(count) || count < 1) count = 1;
-                if (count > 8) count = 8;
-                return count;
-            };
-
-            const syncVisibility = () => {
-                if (!enrollmentsOnly) return;
-                enrollmentsOnly.style.display = sourceSelect.value === 'course_contents' ? 'none' : '';
-            };
-
-            const refreshColumns = () => {
-                const table = sourceSelect.value || 'enrollments';
-                refreshTableColumnSelects(scope, table);
-            };
-
-            const setHeaderCount = (value) => {
-                const target = clampCount(value);
-                const items = [...repeater.querySelectorAll(':scope > [data-repeater-item]')];
-
-                if (items.length < target) {
-                    for (let i = 0; i < target - items.length; i++) {
-                        addBtn.click();
-                    }
-                } else if (items.length > target) {
-                    items.slice(target).forEach(item => item.remove());
-                    renumberRepeater(repeater);
-                }
-
-                countInput.value = target;
-            };
-
-            sourceSelect.addEventListener('change', () => {
-                syncVisibility();
-                refreshColumns();
-            });
-
-            countInput.addEventListener('change', () => {
-                setHeaderCount(countInput.value);
-                refreshColumns();
-            });
-
-            const observer = new MutationObserver(() => {
-                const itemsCount = repeater.querySelectorAll(':scope > [data-repeater-item]').length;
-                if (itemsCount) {
-                    countInput.value = itemsCount;
-                }
-                refreshColumns();
-            });
-            observer.observe(repeater, { childList: true });
-
-            setTimeout(() => {
-                const initial = parseInt(countInput.value, 10);
-                setHeaderCount(Number.isFinite(initial) ? initial : 3);
-                syncVisibility();
-                refreshColumns();
-            }, 250);
-        }
 
         function slugify(str) {
             return (str || '').toString().normalize('NFKD')
@@ -845,7 +736,7 @@ $blockMeta = [
             const updateRouteHint = (route) => {
                 if (!hint) return;
                 if (!route) {
-                    hint.textContent = 'Route placeholders like {course} still need an actual value.';
+                    hint.textContent = 'Route placeholders like {event} still need an actual value.';
                     return;
                 }
                 const placeholders = route.placeholders || [];
@@ -1002,7 +893,17 @@ $blockMeta = [
             if (!grid || grid.dataset.built) return;
             grid.dataset.built = '1';
 
-            Object.entries(BLOCK_TYPE_META).forEach(([type, meta]) => {
+            const addHeading = (text) => {
+                const h = document.createElement('div');
+                h.className = 'col-12 pb-picker-heading';
+                h.textContent = text;
+                grid.appendChild(h);
+            };
+            const entries = Object.entries(BLOCK_TYPE_META).filter(([type]) => PICKER_TYPES.includes(type));
+            let lastGroup = null;
+            entries.forEach(([type, meta]) => {
+                const group = NEW_TYPES.includes(type) ? 'Build your page' : 'Classic sections';
+                if (group !== lastGroup) { addHeading(group); lastGroup = group; }
                 const variants = VARIANTS[type] || ['default'];
                 const col = document.createElement('div');
                 col.className = 'col-md-4 col-lg-3';
@@ -1035,6 +936,7 @@ $blockMeta = [
 
             document.getElementById('pickerSearch')?.addEventListener('input', e => {
                 const q = e.target.value.toLowerCase();
+                grid.querySelectorAll('.pb-picker-heading').forEach(h => { h.style.display = q ? 'none' : ''; });
                 grid.querySelectorAll('[data-block-label]').forEach(col => {
                     col.style.display = col.dataset.blockLabel.includes(q) ? '' : 'none';
                 });
@@ -1189,11 +1091,7 @@ $blockMeta = [
                             if (json.block) {
                                 updateBlockCard(json.block);
                             }
-                            // Refresh live preview if open
-                            const frame = document.getElementById('previewFrame');
-                            if (frame && !document.getElementById('previewPane')?.classList.contains('collapse')) {
-                                frame.contentWindow?.location?.reload();
-                            }
+                            pbRefreshPreview();
                         } else {
                             const msgs = json?.errors
                                 ? Object.values(json.errors).flat().join(' ')
@@ -1263,7 +1161,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Fields</span></div></div>
   <div class="col-12 d-flex justify-content-between align-items-center">
     <label class="form-label small-label mb-0">Form Fields</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="fields">Add Field</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-repeater-add="fields">Add Field</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="fields" data-max="10">
@@ -1317,67 +1215,6 @@ $blockMeta = [
 </div>`);
         }
 
-        function renderTableBlockFields() {
-            return html(`
-<div class="row g-3">
-  <div class="col-md-6">
-    <label class="form-label small-label">Title</label>
-    <input class="form-control" name="data[title]" placeholder="Active Enrollments">
-  </div>
-  <div class="col-md-6">
-    <label class="form-label small-label">Subtitle</label>
-    <input class="form-control" name="data[subtitle]" placeholder="Active enrollments for this course">
-  </div>
-  <div class="col-md-6">
-    <label class="form-label small-label">Table Source</label>
-    <select class="form-select" name="data[table_source]" data-table-source>
-      <option value="enrollments">Enrollments</option>
-      <option value="course_contents">Course Contents</option>
-    </select>
-  </div>
-  <div class="col-md-3">
-    <label class="form-label small-label">Header Count</label>
-    <input class="form-control" type="number" min="1" max="8" name="data[header_count]" value="3" data-header-count>
-  </div>
-  <div class="col-md-3" data-enrollment-only>
-    <label class="form-label small-label">Amount Filter</label>
-    <select class="form-select" name="data[amount_filter]">
-      <option value="any">Any</option>
-      <option value="free" selected>Free (0)</option>
-      <option value="paid">Paid</option>
-    </select>
-  </div>
-
-  <div class="col-12"><div class="section-divider"><span class="section-divider-label">Headers</span></div></div>
-  <div class="col-12 d-flex justify-content-between align-items-center">
-    <label class="form-label small-label mb-0">Columns</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="headers">Add Header</button>
-  </div>
-  <div class="col-12">
-    <div class="repeater" data-repeater data-name="headers" data-max="8">
-      <template data-repeater-template>
-        <div class="repeater-item border rounded-12 p-3 mb-3" data-repeater-item draggable="true">
-          <div class="d-flex gap-3 align-items-start">
-            <span class="drag-handle">☰</span>
-            <div class="row g-2 flex-grow-1">
-              <div class="col-12">
-                <label class="form-label small-label">Column</label>
-                <select class="form-select" name="data[headers][__INDEX__][column]" data-table-column-select>
-                  <option value="">Select column</option>
-                </select>
-              </div>
-            </div>
-            <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>Remove</button>
-          </div>
-        </div>
-      </template>
-    </div>
-  </div>
-  <div class="col-12 text-muted small">
-    Uses the course linked to this page. If no course is selected, the table will be empty.
-  </div>
-</div>`);
-        }
 
         /* ====== FIELD RENDERERS ====== */
         function buildOverviewFields() {
@@ -1403,7 +1240,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Cards</span></div></div>
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Cards</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="items">Add Card</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-repeater-add="items">Add Card</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="items" data-max="5">
@@ -1444,6 +1281,277 @@ $blockMeta = [
 
         function renderFieldsForType(type) {
             switch (type) {
+
+
+
+                case 'feature_grid':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-6"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option><option value="navy">Navy</option></select></div>
+  <div class="col-md-6"><label class="form-label small-label">Cards per row</label>
+    <select class="form-select" name="data[columns]"><option value="3">3</option><option value="2">2</option><option value="4">4</option></select></div>
+  <div class="col-md-6"><label class="form-label small-label">Intro (optional)</label><input class="form-control" name="data[subtitle]" maxlength="320"></div>
+  <div class="col-12 d-flex justify-content-between">
+    <label class="form-label small-label mb-0">Cards</label>
+    <button class="btn btn-outline-secondary btn-sm" type="button" data-repeater-add="items">Add card</button>
+  </div>
+  <div class="col-12">
+    <div class="repeater" data-repeater data-name="items" data-max="12">
+      <template data-repeater-template>
+        <div class="repeater-item border rounded-12 p-3 mb-3" data-repeater-item draggable="true">
+          <div class="d-flex gap-3 align-items-start">
+            <span class="drag-handle"><i class="bi bi-grip-vertical" aria-hidden="true"></i></span>
+            <div class="row g-2 flex-grow-1">
+              <div class="col-12"><label class="form-label small-label">Title*</label><input class="form-control" name="data[items][__INDEX__][title]" required maxlength="100"></div>
+              <div class="col-12"><label class="form-label small-label">Text</label><textarea class="form-control" rows="2" name="data[items][__INDEX__][text]" maxlength="400"></textarea></div>
+              <div class="col-md-6"><label class="form-label small-label">Link text (optional)</label><input class="form-control" name="data[items][__INDEX__][link_text]" maxlength="60"></div>
+              <div class="col-md-6"><label class="form-label small-label">Link (optional)</label><input class="form-control" name="data[items][__INDEX__][link]" placeholder="/consultancy"></div>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>Remove</button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>`);
+
+                case 'steps':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-6"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option></select></div>
+  <div class="col-12"><label class="form-label small-label">Intro (optional)</label><input class="form-control" name="data[subtitle]" maxlength="320"></div>
+  <div class="col-12 d-flex justify-content-between">
+    <label class="form-label small-label mb-0">Steps</label>
+    <button class="btn btn-outline-secondary btn-sm" type="button" data-repeater-add="items">Add step</button>
+  </div>
+  <div class="col-12">
+    <div class="repeater" data-repeater data-name="items" data-max="8">
+      <template data-repeater-template>
+        <div class="repeater-item border rounded-12 p-3 mb-3" data-repeater-item draggable="true">
+          <div class="d-flex gap-3 align-items-start">
+            <span class="drag-handle"><i class="bi bi-grip-vertical" aria-hidden="true"></i></span>
+            <div class="row g-2 flex-grow-1">
+              <div class="col-12"><label class="form-label small-label">Title*</label><input class="form-control" name="data[items][__INDEX__][title]" required maxlength="100"></div>
+              <div class="col-12"><label class="form-label small-label">Text</label><textarea class="form-control" rows="2" name="data[items][__INDEX__][text]" maxlength="400"></textarea></div>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>Remove</button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>`);
+
+                case 'quote_list':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-6"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option></select></div>
+  <div class="col-12 d-flex justify-content-between">
+    <label class="form-label small-label mb-0">Testimonials</label>
+    <button class="btn btn-outline-secondary btn-sm" type="button" data-repeater-add="items">Add testimonial</button>
+  </div>
+  <div class="col-12">
+    <div class="repeater" data-repeater data-name="items" data-max="6">
+      <template data-repeater-template>
+        <div class="repeater-item border rounded-12 p-3 mb-3" data-repeater-item draggable="true">
+          <div class="d-flex gap-3 align-items-start">
+            <span class="drag-handle"><i class="bi bi-grip-vertical" aria-hidden="true"></i></span>
+            <div class="row g-2 flex-grow-1">
+              <div class="col-12"><label class="form-label small-label">Quote*</label><textarea class="form-control" rows="3" name="data[items][__INDEX__][quote]" required maxlength="600"></textarea></div>
+              <div class="col-md-6"><label class="form-label small-label">Name*</label><input class="form-control" name="data[items][__INDEX__][name]" required maxlength="80"></div>
+              <div class="col-md-6"><label class="form-label small-label">Role or organisation</label><input class="form-control" name="data[items][__INDEX__][role]" maxlength="120"></div>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>Remove</button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>`);
+
+                case 'contact_info':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-6"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option></select></div>
+  <div class="col-12"><label class="form-label small-label">Intro (optional)</label><input class="form-control" name="data[subtitle]" maxlength="320"></div>
+  <div class="col-md-6"><label class="form-label small-label">Email</label><input class="form-control" type="email" name="data[email]" maxlength="150"></div>
+  <div class="col-md-6"><label class="form-label small-label">Phone</label><input class="form-control" name="data[phone]" maxlength="40"></div>
+  <div class="col-md-6"><label class="form-label small-label">Address</label><textarea class="form-control" rows="2" name="data[address]" maxlength="300"></textarea></div>
+  <div class="col-md-6"><label class="form-label small-label">Opening hours</label><textarea class="form-control" rows="2" name="data[hours]" maxlength="200" placeholder="Mon to Fri, 9am to 5pm"></textarea></div>
+</div>`);
+
+                case 'faq_list':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-6"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option></select></div>
+  <div class="col-12"><label class="form-label small-label">Intro (optional)</label><input class="form-control" name="data[subtitle]" maxlength="320"></div>
+  <div class="col-12 d-flex justify-content-between">
+    <label class="form-label small-label mb-0">Questions</label>
+    <button class="btn btn-outline-secondary btn-sm" type="button" data-repeater-add="items">Add question</button>
+  </div>
+  <div class="col-12">
+    <div class="repeater" data-repeater data-name="items" data-max="50">
+      <template data-repeater-template>
+        <div class="repeater-item border rounded-12 p-3 mb-3" data-repeater-item draggable="true">
+          <div class="d-flex gap-3 align-items-start">
+            <span class="drag-handle"><i class="bi bi-grip-vertical" aria-hidden="true"></i></span>
+            <div class="row g-2 flex-grow-1">
+              <div class="col-12"><label class="form-label small-label">Question*</label><input class="form-control" name="data[items][__INDEX__][q]" required maxlength="200"></div>
+              <div class="col-12"><label class="form-label small-label">Answer*</label><textarea class="form-control" rows="3" name="data[items][__INDEX__][a]" required maxlength="1200"></textarea></div>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>Remove</button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>`);
+
+                case 'page_header':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-4"><label class="form-label small-label">Small label above the headline</label><input class="form-control" name="data[kicker]" maxlength="80"></div>
+  <div class="col-md-8"><label class="form-label small-label">Headline*</label><input class="form-control" name="data[title]" required maxlength="180"></div>
+  <div class="col-12"><label class="form-label small-label">Intro</label><textarea class="form-control" rows="3" name="data[subtitle]" maxlength="400"></textarea></div>
+  <div class="col-md-6"><label class="form-label small-label">Main button text</label><input class="form-control" name="data[primary_text]" maxlength="60"></div>
+  ${linkControl('data[primary_link]', 'Main button link', 'col-md-6')}
+  <div class="col-md-6"><label class="form-label small-label">Second link text</label><input class="form-control" name="data[secondary_text]" maxlength="60"></div>
+  ${linkControl('data[secondary_link]', 'Second link', 'col-md-6')}
+  <div class="col-md-6">
+    <label class="form-label small-label">Image (optional)</label>
+    <input class="form-control" type="file" name="image" accept=".webp,.jpg,.jpeg,.png" data-file-key="image">
+    <div class="mt-2"><img data-preview-key="image" style="max-width:100%;height:auto;display:none"></div>
+  </div>
+  <div class="col-md-6"><label class="form-label small-label">Image description (for screen readers)</label><input class="form-control" name="data[image_alt]" maxlength="160"></div>
+</div>`);
+
+                case 'rich_text':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="180"></div>
+  <div class="col-md-3"><label class="form-label small-label">Width</label>
+    <select class="form-select" name="data[width]"><option value="narrow">Narrow, easy to read</option><option value="wide">Wide</option></select></div>
+  <div class="col-md-3"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option></select></div>
+  <div class="col-12">
+    <label class="form-label small-label" id="rtLabel">Text*</label>
+    <div class="rt" data-rt>
+      <div class="rt-bar" role="toolbar" aria-label="Text formatting">
+        <button type="button" class="rt-btn" data-cmd="bold" aria-label="Bold" title="Bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+        <button type="button" class="rt-btn" data-cmd="italic" aria-label="Italic" title="Italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+        <span class="rt-sep"></span>
+        <button type="button" class="rt-btn rt-txt" data-block="h2" title="Heading">H2</button>
+        <button type="button" class="rt-btn rt-txt" data-block="h3" title="Subheading">H3</button>
+        <button type="button" class="rt-btn rt-txt" data-block="p" title="Paragraph">Text</button>
+        <span class="rt-sep"></span>
+        <button type="button" class="rt-btn" data-cmd="insertUnorderedList" aria-label="Bulleted list" title="Bulleted list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+        <button type="button" class="rt-btn" data-cmd="insertOrderedList" aria-label="Numbered list" title="Numbered list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+        <button type="button" class="rt-btn" data-block="blockquote" aria-label="Quote" title="Quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+        <span class="rt-sep"></span>
+        <button type="button" class="rt-btn" data-link aria-label="Add link" title="Add link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+        <span class="rt-linkbox" hidden>
+          <input type="url" class="form-control form-control-sm" placeholder="https://" aria-label="Link address">
+          <button type="button" class="btn btn-sm btn-primary" data-link-apply>Apply</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-link-remove>Remove</button>
+        </span>
+      </div>
+      <div class="rt-area" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="rtLabel" data-rt-area></div>
+      <input type="hidden" name="data[body]" data-rt-input>
+    </div>
+  </div>
+</div>`);
+
+                case 'stats':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-6"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option><option value="navy">Navy</option></select></div>
+  <div class="col-12"><label class="form-label small-label">Intro (optional)</label><input class="form-control" name="data[subtitle]" maxlength="320"></div>
+  <div class="col-12 d-flex justify-content-between">
+    <label class="form-label small-label mb-0">Numbers</label>
+    <button class="btn btn-outline-secondary btn-sm" type="button" data-repeater-add="items">Add number</button>
+  </div>
+  <div class="col-12">
+    <div class="repeater" data-repeater data-name="items" data-max="8">
+      <template data-repeater-template>
+        <div class="repeater-item border rounded-12 p-3 mb-3" data-repeater-item draggable="true">
+          <div class="d-flex gap-3 align-items-start">
+            <span class="drag-handle"><i class="bi bi-grip-vertical" aria-hidden="true"></i></span>
+            <div class="row g-2 flex-grow-1">
+              <div class="col-md-4"><label class="form-label small-label">Number*</label><input class="form-control" name="data[items][__INDEX__][value]" placeholder="120" required maxlength="24"></div>
+              <div class="col-md-8"><label class="form-label small-label">Label*</label><input class="form-control" name="data[items][__INDEX__][label]" placeholder="Attendees" required maxlength="90"></div>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>Remove</button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>`);
+
+                case 'form':
+                    return html(`
+<div class="row g-3">
+  <div class="col-12">
+    <label class="form-label small-label">Form*</label>
+    <select class="form-select" name="data[form_id]" required>
+      <option value="">Choose a form…</option>
+      ${FORM_OPTIONS.map(f => `<option value="${f.id}">${String(f.name).replace(/</g, '&lt;')}</option>`).join('')}
+    </select>
+    <div class="form-text">Build and edit forms under Forms in the sidebar. Responses go to Responses.</div>
+  </div>
+  <div class="col-md-8"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-4"><label class="form-label small-label">Background</label>
+    <select class="form-select" name="data[tone]"><option value="white">White</option><option value="tint">Pale blue</option><option value="navy">Navy</option></select></div>
+  <div class="col-12"><label class="form-label small-label">Intro (optional)</label><textarea class="form-control" rows="2" name="data[intro]" maxlength="400"></textarea></div>
+</div>`);
+
+                case 'events_grid':
+                    return html(`
+<div class="row g-3">
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="160"></div>
+  <div class="col-md-6"><label class="form-label small-label">Intro (optional)</label><input class="form-control" name="data[subtitle]" maxlength="320"></div>
+  <div class="col-md-4"><label class="form-label small-label">Show*</label>
+    <select class="form-select" name="data[show]" required><option value="upcoming">Upcoming events</option><option value="past">Past events</option><option value="all">All events</option></select></div>
+  <div class="col-md-4"><label class="form-label small-label">Category</label>
+    <select class="form-select" name="data[category_id]"><option value="">Any category</option>${Object.entries(EVENT_TYPES).map(([k, v]) => `<option value="${k}">${String(v).replace(/</g, '&lt;')}</option>`).join('')}</select></div>
+  <div class="col-md-4"><label class="form-label small-label">How many</label><input class="form-control" type="number" min="1" max="12" name="data[limit]" placeholder="3"></div>
+  <div class="col-md-6"><label class="form-label small-label">Link text</label><input class="form-control" name="data[link_text]" maxlength="60" placeholder="All events"></div>
+  ${linkControl('data[link]', 'Link', 'col-md-6')}
+</div>`);
+
+                case 'event_facts':
+                    return html(`
+<div class="row g-3">
+  <div class="col-12"><div class="alert alert-info mb-0">Shows the date, place and type of the event this page is linked to. Link the page under Page settings, Bind to Event.</div></div>
+  <div class="col-md-6"><label class="form-label small-label">Heading (optional)</label><input class="form-control" name="data[title]" maxlength="120" placeholder="At a glance"></div>
+  <div class="col-md-6"><label class="form-label small-label">Note (optional)</label><input class="form-control" name="data[note]" maxlength="300"></div>
+  <div class="col-md-6"><label class="form-label small-label">Button text (hidden after the event)</label><input class="form-control" name="data[button_text]" maxlength="60"></div>
+  ${linkControl('data[button_link]', 'Button link', 'col-md-6')}
+</div>`);
+
+                case 'cta_band':
+                    return html(`
+<div class="row g-3">
+  <div class="col-12"><label class="form-label small-label">Headline*</label><input class="form-control" name="data[title]" required maxlength="200"></div>
+  <div class="col-12"><label class="form-label small-label">Supporting text (optional)</label><textarea class="form-control" rows="2" name="data[subtitle]" maxlength="320"></textarea></div>
+  <div class="col-md-6"><label class="form-label small-label">Main button text</label><input class="form-control" name="data[primary_text]" maxlength="60"></div>
+  ${linkControl('data[primary_link]', 'Main button link', 'col-md-6')}
+  <div class="col-md-6"><label class="form-label small-label">Second link text</label><input class="form-control" name="data[secondary_text]" maxlength="60"></div>
+  ${linkControl('data[secondary_link]', 'Second link', 'col-md-6')}
+</div>`);
+
                 case 'hero':
                     return html(`
 <div class="row g-3">
@@ -1618,7 +1726,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Cards</span></div></div>
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Cards</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="cards">Add Card</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-repeater-add="cards">Add Card</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="cards">
@@ -1650,7 +1758,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Tiles</span></div></div>
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Tiles</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="tiles">Add Tile</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-repeater-add="tiles">Add Tile</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="tiles">
@@ -1721,7 +1829,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Columns</span></div></div>
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Columns</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="columns">Add Column</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-repeater-add="columns">Add Column</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="columns" data-max="2">
@@ -1765,7 +1873,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Items</span></div></div>
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Services</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="items">Add Service</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-repeater-add="items">Add Service</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="items">
@@ -2000,7 +2108,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Items</span></div></div>
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Projects</label>
-    <button class="btn btn-dark btn-sm" data-repeater-add="items" type="button">Add</button>
+    <button class="btn btn-outline-secondary btn-sm" data-repeater-add="items" type="button">Add</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="items">
@@ -2034,7 +2142,7 @@ $blockMeta = [
   <div class="col-12"><div class="section-divider"><span class="section-divider-label">Testimonials</span></div></div>
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Items</label>
-    <button class="btn btn-dark btn-sm" data-repeater-add="items" type="button">Add</button>
+    <button class="btn btn-outline-secondary btn-sm" data-repeater-add="items" type="button">Add</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="items">
@@ -2054,70 +2162,6 @@ $blockMeta = [
               <div class="col-md-3"><label class="form-label small-label">Rating %</label><input class="form-control" type="number" min="0" max="100" name="data[items][__INDEX__][rating_fill]" value="100"></div>
             </div>
             <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>Remove</button>
-          </div>
-        </div>
-      </template>
-    </div>
-  </div>
-</div>`);
-
-                case 'pricing':
-                    return html(`
-<div class="row g-3">
-  <div class="col-md-5"><label class="form-label small-label">Kicker</label><input class="form-control" name="data[sidebar_kicker]"></div>
-  <div class="col-md-7"><label class="form-label small-label">Title*</label><input class="form-control" name="data[title]" required></div>
-  <div class="col-12"><label class="form-label small-label">Description</label><textarea class="form-control" name="data[desc]" rows="2"></textarea></div>
-  <div class="col-md-5"><label class="form-label small-label">Link Text</label><input class="form-control" name="data[link_text]"></div>
-  ${linkControl('data[link]', 'Link', 'col-md-7')}
-  <div class="col-12"><div class="section-divider"><span class="section-divider-label">Plans (At least 1 required)</span></div></div>
-  <div class="col-12 d-flex justify-content-between">
-    <label class="form-label small-label mb-0">Plans</label>
-    <button class="btn btn-dark btn-sm" type="button" data-repeater-add="plans">Add Plan</button>
-  </div>
-  <div class="col-12">
-    <div class="repeater" data-repeater data-name="plans" data-min="1">
-      <template data-repeater-template>
-        <div class="repeater-item border rounded-12 p-3 mb-3" data-repeater-item draggable="true">
-          <div class="d-flex gap-3 align-items-start">
-            <span class="drag-handle">☰</span>
-            <div class="row g-2 flex-grow-1">
-              <div class="col-md-6"><label class="form-label small-label">Title*</label><input class="form-control" name="data[plans][__INDEX__][title]" required></div>
-              <div class="col-md-6"><label class="form-label small-label">Subtitle</label><input class="form-control" name="data[plans][__INDEX__][subtitle]"></div>
-              <div class="col-md-6"><label class="form-label small-label">Price</label><input class="form-control" name="data[plans][__INDEX__][price_naira]"></div>
-              <div class="col-md-6"><label class="form-label small-label">Price USD</label><input class="form-control" name="data[plans][__INDEX__][price_usd]"></div>
-              <div class="col-md-6">
-                <label class="form-label small-label">Link to Course</label>
-                <select class="form-select" name="data[plans][__INDEX__][course_id]" data-plan-course>
-                  <option value="">No course link</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label small-label">Course Module</label>
-                <select class="form-select" name="data[plans][__INDEX__][course_content_id]" data-plan-content>
-                  <option value="">Select course first</option>
-                </select>
-                <small class="text-muted">Buy buttons will redirect to this module’s checkout.</small>
-              </div>
-
-              <div class="col-12">
-                <div class="d-flex justify-content-between mb-2 mt-1">
-                  <label class="form-label small-label mb-0">Features</label>
-                  <button class="btn btn-outline-primary btn-sm" type="button" data-repeater-add="plans___INDEX___features">Add Feature</button>
-                </div>
-                <div class="repeater" data-repeater data-name="plans___INDEX___features">
-                  <template data-repeater-template>
-                    <div class="repeater-item d-flex align-items-center gap-2 mb-2" data-repeater-item draggable="true">
-                      <span class="drag-handle">☰</span>
-                      <input class="form-control" name="data[plans][__INDEX__][features][__SUBINDEX__]" placeholder="Feature text">
-                      <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove>×</button>
-                    </div>
-                  </template>
-                </div>
-              </div>
-              <div class="col-md-5"><label class="form-label small-label">Link Text</label><input class="form-control" name="data[plans][__INDEX__][link_text]"></div>
-              ${linkControl('data[plans][__INDEX__][link]', 'Link', 'col-md-7')}
-            </div>
-            <button class="btn btn-outline-danger btn-sm" type="button" data-repeater-remove data-confirm="Remove this plan?">Remove</button>
           </div>
         </div>
       </template>
@@ -2186,7 +2230,7 @@ $blockMeta = [
 <div class="row g-3">
   <div class="col-12 d-flex justify-content-between">
     <label class="form-label small-label mb-0">Slides</label>
-    <button type="button" class="btn btn-dark btn-sm" data-repeater-add="slides">Add Slide</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-repeater-add="slides">Add Slide</button>
   </div>
   <div class="col-12">
     <div class="repeater" data-repeater data-name="slides">
@@ -2213,16 +2257,61 @@ $blockMeta = [
                 case 'form_dark':
                 case 'form_light':
                     return renderFormBuilderFields();
-                case 'table':
-                    return renderTableBlockFields();
+
 
                 default:
                     return html(`<div class="alert alert-info">Select a block type to see its fields.</div>`);
             }
         }
 
+
+        /* ====== RICH TEXT (page sections) ====== */
+        function initRichText(mount, initial) {
+            const area = mount.querySelector('[data-rt-area]');
+            const input = mount.querySelector('[data-rt-input]');
+            const linkbox = mount.querySelector('.rt-linkbox');
+            if (!area || !input) return;
+            area.innerHTML = initial;
+            const sync = () => { input.value = area.innerHTML; };
+            sync();
+            area.addEventListener('input', sync);
+            area.addEventListener('focus', () => { try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {} });
+            area.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                document.execCommand('insertHTML', false, text.split(/\r?\n\s*\r?\n/).map(p => '<p>' + esc(p).replace(/\r?\n/g, '<br>') + '</p>').join(''));
+                sync();
+            });
+            let saved = null;
+            mount.querySelector('.rt-bar').addEventListener('mousedown', (e) => { if (!e.target.closest('input')) e.preventDefault(); });
+            mount.querySelector('.rt-bar').addEventListener('click', (e) => {
+                const b = e.target.closest('button');
+                if (!b) return;
+                if (b.dataset.cmd) { area.focus(); document.execCommand(b.dataset.cmd); sync(); }
+                else if (b.dataset.block) { area.focus(); document.execCommand('formatBlock', false, b.dataset.block); sync(); }
+                else if (b.hasAttribute('data-link')) {
+                    const sel = window.getSelection();
+                    if (!sel.rangeCount || sel.isCollapsed || !area.contains(sel.anchorNode)) { iziToast.info({ title: 'Select some text first', message: '', position: 'topRight', timeout: 2500 }); return; }
+                    saved = sel.getRangeAt(0).cloneRange();
+                    linkbox.hidden = false; linkbox.querySelector('input').value = ''; linkbox.querySelector('input').focus();
+                } else if (b.hasAttribute('data-link-apply') || b.hasAttribute('data-link-remove')) {
+                    const url = linkbox.querySelector('input').value.trim();
+                    area.focus(); const s2 = window.getSelection(); s2.removeAllRanges(); if (saved) s2.addRange(saved);
+                    if (b.hasAttribute('data-link-remove')) document.execCommand('unlink');
+                    else if (url) document.execCommand('createLink', false, /^[a-z]+:|^[\/#]/i.test(url) ? url : 'https://' + url);
+                    linkbox.hidden = true; sync();
+                }
+            });
+            linkbox.querySelector('input').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); linkbox.querySelector('[data-link-apply]').click(); } });
+        }
+
         /* ====== TYPE-SPECIFIC BINDINGS ====== */
         function attachTypeBindings(type, mount, mode, existing) {
+
+            if (type === 'rich_text') {
+                initRichText(mount, existing.body || '');
+            }
             if (type === 'hero') {
                 const title = mount.querySelector('input[name="data[title]"]');
                 const slug = mount.querySelector('input[name="data[slug]"][data-hero-slug]');
@@ -2258,13 +2347,7 @@ $blockMeta = [
                 }
             }
 
-            if (type === 'pricing') {
-                initPricingPlanCourseBindings(mount);
-            }
 
-            if (type === 'table') {
-                initTableBlockBindings(mount);
-            }
         }
 
         function toggleTileGroups(scope, idx, typeVal) {
@@ -3277,111 +3360,10 @@ $blockMeta = [
 
 
 
-        function debugFormData(root = document) {
-
-            console.log('=== FORM DEBUG ===');
 
 
 
-            // Check for placeholders
 
-            const badFields = root.querySelectorAll('[name*="__INDEX__"], [name*="__SUBINDEX__"]');
-
-            if (badFields.length > 0) {
-
-                console.error('⚠ Found fields with placeholders:', badFields.length);
-
-                badFields.forEach(f => console.error('  -', f.name));
-
-            } else {
-
-                console.log('✅ No placeholder fields found');
-
-            }
-
-
-
-            // Show all data fields
-
-            const dataFields = root.querySelectorAll('[name^="data["]');
-
-            console.log(`📊 Total data fields: ${dataFields.length}`);
-
-
-
-            // Group by top-level key
-
-            const grouped = {};
-
-            dataFields.forEach(f => {
-
-                const match = f.name.match(/^data\[([^\]]+)\]/);
-
-                if (match) {
-
-                    const key = match[1];
-
-                    grouped[key] = (grouped[key] || 0) + 1;
-
-                }
-
-            });
-
-
-
-            console.table(grouped);
-
-
-
-            // Check for empty required fields
-
-            const emptyRequired = [...root.querySelectorAll('[required]')].filter(f => !f.value?.trim());
-
-            if (emptyRequired.length > 0) {
-
-                console.warn('⚠ Empty required fields:', emptyRequired.length);
-
-            }
-
-        }
-
-
-
-        // Add validation for minimum plan requirement:
-
-        function validatePricingBlock(mount) {
-
-            const plansRepeater = mount.querySelector('.repeater[data-name="plans"]');
-
-            if (!plansRepeater) return true;
-
-
-
-            const planItems = plansRepeater.querySelectorAll(':scope > [data-repeater-item]');
-
-            const filledPlans = [...planItems].filter(item => {
-
-                const titleInput = item.querySelector('input[name*="[title]"]');
-
-                return titleInput && titleInput.value.trim() !== '';
-
-            });
-
-
-
-            if (filledPlans.length === 0) {
-
-                iziToast.warning({ title: 'Validation', message: 'Please add at least one pricing plan.', position: 'topRight', timeout: 4000 });
-
-                return false;
-
-            }
-
-
-
-            return true;
-
-        }
 
 
 
@@ -3446,6 +3428,7 @@ $blockMeta = [
                         badge.className = newState ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger';
                         badge.textContent = newState ? 'Live' : 'Draft';
                     }
+                    pbRefreshPreview();
                     iziToast.success({ title: newState ? 'Published' : 'Unpublished', message: '', position: 'topRight', timeout: 2500 });
                 }).catch(() => {
                     iziToast.error({ title: 'Error', message: 'Could not update publish status.', position: 'topRight' });
@@ -3475,8 +3458,14 @@ $blockMeta = [
                 const delForm = e.target.closest('form[data-action="delete"]');
                 if (!delForm) return;
                 e.preventDefault();
-                if (!confirm('Delete this block? This cannot be undone.')) return;
                 const row = delForm.closest('.block-row');
+                const blockName = row?.querySelector('.fw-semibold')?.textContent.trim() || 'This block';
+                const yes = await window.feConfirm({
+                    title: 'Delete this block?',
+                    message: blockName + ' will be removed from the page. This cannot be undone.',
+                    action: 'Delete block'
+                });
+                if (!yes) return;
                 try {
                     const res = await fetch(delForm.action, {
                         method: 'POST',
@@ -3487,10 +3476,7 @@ $blockMeta = [
                     if (res.ok) {
                         row?.remove();
                         iziToast.success({ title: 'Deleted', message: 'Block removed.', position: 'topRight', timeout: 3000 });
-                        const frame = document.getElementById('previewFrame');
-                        if (frame && !document.getElementById('previewPane')?.classList.contains('collapse')) {
-                            frame.contentWindow?.location?.reload();
-                        }
+                        pbRefreshPreview();
                     } else {
                         iziToast.error({ title: 'Error', message: 'Could not delete block.', position: 'topRight' });
                     }
@@ -3536,6 +3522,37 @@ $blockMeta = [
                 }
             });
 
+            function refreshMoveButtons() {
+                const rows = [...blockList.querySelectorAll('.block-row')];
+                rows.forEach((row, i) => {
+                    const up = row.querySelector('[data-action="move-up"]');
+                    const down = row.querySelector('[data-action="move-down"]');
+                    if (up) up.disabled = i === 0;
+                    if (down) down.disabled = i === rows.length - 1;
+                });
+            }
+
+            blockList.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-action="move-up"], [data-action="move-down"]');
+                if (!btn || btn.disabled) return;
+                const row = btn.closest('.block-row');
+                const up = btn.dataset.action === 'move-up';
+                const sibling = up ? row.previousElementSibling : row.nextElementSibling;
+                if (!sibling || !sibling.classList.contains('block-row')) return;
+                if (up) blockList.insertBefore(row, sibling); else blockList.insertBefore(sibling, row);
+                refreshMoveButtons();
+                // keep focus on the same control, or its twin if it just became disabled
+                (btn.disabled ? row.querySelector(up ? '[data-action="move-down"]' : '[data-action="move-up"]') : btn)?.focus();
+                const rows = [...blockList.querySelectorAll('.block-row')];
+                const name = row.querySelector('.fw-semibold')?.textContent.trim() || 'Block';
+                const live = document.getElementById('blockLive');
+                if (live) live.textContent = name + ' moved to position ' + (rows.indexOf(row) + 1) + ' of ' + rows.length;
+                saveBlockOrder();
+            });
+
+            refreshMoveButtons();
+            blockList.addEventListener('dragend', () => setTimeout(refreshMoveButtons, 0));
+
             async function saveBlockOrder() {
                 const order = [...blockList.querySelectorAll('.block-row')].map((el, idx) => ({
                     id: el.dataset.id,
@@ -3555,6 +3572,7 @@ $blockMeta = [
                     });
 
                     if (!res.ok) throw new Error('Failed to save order');
+                    pbRefreshPreview();
                 } catch (err) {
                     console.error('Error saving order:', err);
                     iziToast.error({ title: 'Reorder Error', message: 'Could not save block order. Refresh to retry.', position: 'topRight' });

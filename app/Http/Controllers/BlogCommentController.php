@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use App\Models\BlogComment;
+use App\Support\Turnstile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +15,10 @@ class BlogCommentController extends Controller
         $blog = Blog::where('slug', $slug)->firstOrFail();
 
         $user = Auth::user();
+
+        if (!Turnstile::passes($request)) {
+            return back()->withInput()->withErrors(['body' => Turnstile::FAILED_MESSAGE]);
+        }
 
         $rules = [
             'body' => 'required|string|max:2000',

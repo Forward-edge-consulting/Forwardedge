@@ -1,5 +1,28 @@
 @extends('user.master_page')
 @section('title', ' Welcome | Forward Edge Consulting')
+@push('styles')
+    <style>
+        .fe-hero-photo img { object-position: 28% center; }
+        .fe-hero-photo::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: rgba(14, 77, 118, .38);
+            pointer-events: none;
+        }
+        .fe-home-consultancy { display:inline-flex; align-items:center; gap:12px; margin-top:24px; padding:12px 20px; border:0; border-radius:6px; min-height:48px; background:#087eaf; color:#fff; font-weight:600; font-size:16px; line-height:1.5; }
+        .fe-home-consultancy:hover { color:#fff; background:#066891; }
+        .fe-home-consultancy:focus-visible { outline:2px solid #fff; outline-offset:4px; }
+        .tj-about-section .about-content-area { min-height:0; padding:clamp(24px,4vw,48px); }
+        .fe-about-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:stretch; }
+        .tj-about-section .about-content-area { height:100%; }
+        .tj-about-section .about-bottom-area { margin:0; display:flex; }
+        .tj-about-section .client-review-cont { width:100%; max-width:none; display:flex; align-items:center; padding:clamp(24px,4vw,48px); }
+        .tj-about-section .client-review-cont .desc { margin:0; font-size:18px; line-height:1.7; }
+        @media(max-width:991px) { .fe-about-grid { grid-template-columns:1fr; } }
+    </style>
+@endpush
 @section('main')
 
     <!-- start: Banner Section -->
@@ -14,39 +37,21 @@
                         <span>Direction.</span>
                     </h1>
                     <div class="banner-desc-area wow fadeInUp" data-wow-delay=".7s">
-                        <a class="banner-link" href="about.html">
+                        <a class="banner-link" href="{{ route('about') }}" aria-label="About Forward Edge">
                             <span><i class="tji-arrow-right-big"></i></span>
                         </a>
                         <div class="banner-desc">Cybersecurity, IT & Renewable Energy Solutions for a Secure and Resilient
                             Future.
                         </div>
                     </div>
+                    <a class="fe-home-consultancy" href="{{ route('consultancy') }}">Book a consultancy <span aria-hidden="true">↗</span></a>
                 </div>
                 <div class="banner-shape">
                     <img src="{{ asset('frontend/assets/images/shape/pattern-bg.webp') }}" alt="">
                 </div>
             </div>
             <div class="banner-right-box">
-                <div class="banner-img">
-                    <img data-speed="0.8" src="{{ asset('frontend/assets/images/hero/banner.png') }}" alt="">
-                </div>
-                <!-- <div class="box-area">
-                                                    <div class="customers-box">
-                                                      <div class="customers">
-                                                        <ul>
-                                                          <li class="wow fadeInLeft" data-wow-delay=".5s"><img src="assets/images/testimonial/client-1.webp"
-                                                              alt=""></li>
-                                                          <li class="wow fadeInLeft" data-wow-delay=".6s"><img src="assets/images/testimonial/client-2.webp"
-                                                              alt=""></li>
-                                                          <li class="wow fadeInLeft" data-wow-delay=".7s"><img src="assets/images/testimonial/client-3.webp"
-                                                              alt=""></li>
-                                                          <li class="wow fadeInLeft" data-wow-delay=".8s"><span><i class="tji-plus"></i></span></li>
-                                                        </ul>
-                                                      </div>
-                                                      <div class="customers-number wow fadeInUp" data-wow-delay=".5s">30K</div>
-                                                      <h6 class="customers-text wow fadeInUp" data-wow-delay=".5s">Happy customer we have world-wide.</h6>
-                                                    </div>
-                                                  </div> -->
+                @include('user.partials.hero-slideshow')
             </div>
         </div>
         <div class="banner-scroll wow fadeInDown" data-wow-delay="2s">
@@ -232,29 +237,14 @@
     <section class="tj-about-section section-gap">
         <div class="container">
             <div class="row">
-                <div class="col-xl-6 col-lg-6 order-lg-1 order-2">
-                    <div class="about-img-area wow fadeInLeft" data-wow-delay=".2s">
-                        <div class="about-img overflow-hidden">
-                            <img data-speed="0.8" src="{{ asset('frontend/assets/images/about/banner1.jpg') }}"
-                                alt="" height="400px">
-                        </div>
-                        <div class="box-area">
-                            <div class="experience-box wow fadeInUp" data-wow-delay=".3s">
-                                <span class="sub-title">Experiences</span>
-                                <div class="customers-number">13+</div>
-                                <h6 class="customers-text">Decades of Experience, Endless Innovation</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 order-lg-2 order-1">
+                <div class="col-12 fe-about-grid">
                     <div class="about-content-area style-1 wow fadeInLeft" data-wow-delay=".2s">
                         <div class="sec-heading">
                             <span class="sub-title wow fadeInUp" data-wow-delay=".3s"><i class="tji-box"></i>Get to
                                 Know
                                 Us</span>
-                            <h2 class="sec-title title-anim">Empowering Businesses with Innovation,
-                                Expertise, and for <span>Success.</span>
+                            <h2 class="sec-title title-anim">Technology and expertise for
+                                <span>stronger businesses.</span>
                             </h2>
                         </div>
                         <div class="wow fadeInUp" data-wow-delay=".5s">
@@ -266,16 +256,6 @@
                     </div>
                     <div class="about-bottom-area">
                         <div class="client-review-cont wow fadeInUp" data-wow-delay=".7s">
-                            <div class="rating-area">
-                                <div class="star-ratings">
-                                    <div class="fill-ratings" style="width: 100%">
-                                        <span>★★★★★</span>
-                                    </div>
-                                    <div class="empty-ratings">
-                                        <span>★★★★★</span>
-                                    </div>
-                                </div>
-                            </div>
                             <p class="desc"> Forward Edge Consulting is a technology and security consulting firm helping
                                 organizations across Africa build resilience through cybersecurity, cloud solutions, AI
                                 integration, and enterprise IT infrastructure. In addition to our digital transformation
@@ -283,18 +263,9 @@
                                 installations — empowering businesses and communities to achieve both digital and energy
                                 resilience.
                             </p>
-                            <div class="client-info-area">
 
-                                <span class="quote-icon"><i class="tji-quote"></i></span>
-                            </div>
                         </div>
-                        <!-- <div class="video-img  wow fadeInUp" data-wow-delay=".9s">
-                                                        <img src="assets/images/about/about-2.webp" alt="">
-                                                        <a class="video-btn video-popup" data-autoplay="true" data-vbtype="video" data-maxwidth="1200px"
-                                                          href="https://www.youtube.com/watch?v=MLpWrANjFbI&amp;ab_channel=eidelchteinadvogados">
-                                                          <span><i class="tji-play"></i></span>
-                                                        </a>
-                                                      </div> -->
+
                     </div>
                 </div>
             </div>
@@ -692,12 +663,12 @@
                                     [
                                         'question' => 'What services does Bexon offer to clients?',
                                         'answer' =>
-                                            'Getting started is easy! Simply reach out to us through our contact form or give us a call, and we’ll schedule a consultation to discuss your project and how we can best assist you. Our team keeps you informed throughout the process, ensuring quality control and timely delivery.',
+                                            'Getting started is easy! Simply email us or give us a call, and we’ll schedule a consultation to discuss your project and how we can best assist you. Our team keeps you informed throughout the process, ensuring quality control and timely delivery.',
                                     ],
                                     [
                                         'question' => 'How do I get started with Corporate Business?',
                                         'answer' =>
-                                            'Getting started is easy! Simply reach out to us through our contact form or give us a call, and we’ll schedule a consultation to discuss your project and how we can best assist you.',
+                                            'Getting started is easy! Simply email us or give us a call, and we’ll schedule a consultation to discuss your project and how we can best assist you.',
                                     ],
                                     [
                                         'question' => 'How do you ensure the success of a project?',
@@ -741,113 +712,7 @@
     </section>
     <!-- end: Faq Section -->
 
-    <!-- start: Contact Section -->
-    <section class="tj-contact-section section-gap section-gap-x">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="global-map wow fadeInUp" data-wow-delay=".3s">
-                        <div class="global-map-img">
-                            <img src="{{ asset('frontend/assets/images/bg/map.svg') }}" alt="Image">
-                            <div class="location-indicator loc-1">
-                                <div class="location-tooltip">
-                                    <span>Head office:</span>
-                                    <p>993 Renner Burg, West Rond, MT 94251-030, USA.</p>
-                                    <a href="tel:10095447818">P: +1 (009) 544-7818</a>
-                                    <a href="mailto:support@bexon.com">M: support@bexon.com</a>
-                                </div>
-                            </div>
-                            <div class="location-indicator loc-2">
-                                <div class="location-tooltip">
-                                    <span>Regional office:</span>
-                                    <p>Hessisch Lichtenau 37235, Kassel, Germany.</p>
-                                    <a href="tel:10098801810">P: +1 (009) 880-1810</a>
-                                    <a href="mailto:support@bexon.com">M: support@bexon.com</a>
-                                </div>
-                            </div>
-                            <div class="location-indicator loc-3">
-                                <div class="location-tooltip">
-                                    <span>Regional office:</span>
-                                    <p>32 Altamira, State of Pará, Brazil.</p>
-                                    <a href="tel:10095447818">P: +1 (009) 544-7818</a>
-                                    <a href="mailto:support@bexon.com">M: support@bexon.com</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="contact-form style-2 wow fadeInUp" data-wow-delay=".4s">
-                        <div class="sec-heading">
-                            <span class="sub-title text-white"><i class="tji-box"></i>Get in
-                                Touch</span>
-                            <h2 class="sec-title title-anim">Drop Us a <span>Line.</span></h2>
-                        </div>
-                        @include('user.partials.form-alerts')
-                        <form id="contact-form-2" action="{{ route('contact.store') }}" method="POST">
-                            @csrf
-                            <div class="row wow fadeInUp" data-wow-delay=".5s">
-                                <div class="col-sm-6">
-                                    <div class="form-input">
-                                        <input type="text" name="cfName2" placeholder="Full Name *"
-                                            value="{{ old('cfName2') }}" required>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-input">
-                                        <input type="email" name="cfEmail2" placeholder="Email Address *"
-                                            value="{{ old('cfEmail2') }}" required>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-input">
-                                        <input type="tel" name="cfPhone2" placeholder="Phone number"
-                                            value="{{ old('cfPhone2') }}">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-input">
-                                        <div class="tj-nice-select-box">
-                                            <div class="tj-select">
-                                                <select name="cfSubject2">
-                                                    <option value="">Choose a service</option>
-                                                    @foreach ($services as $service)
-                                                        <option value="{{ $service->id }}"
-                                                            @selected(old('cfSubject2') == $service->id)>
-                                                            {{ $service->title }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="form-input message-input">
-                                        <textarea name="cfMessage2" id="message" placeholder="Type message *" required>{{ old('cfMessage2') }}</textarea>
-                                    </div>
-                                </div>
-                                <div class="submit-btn">
-                                    <button class="tj-primary-btn" type="submit">
-                                        <span class="btn-text"><span>Send Message</span></span>
-                                        <span class="btn-icon"><i class="tji-arrow-right-long"></i></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="bg-shape-1">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
-        </div>
-        <div class="bg-shape-2">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
-        </div>
-    </section>
-    <!-- end: Contact Section -->
+    @include('user.partials.contact-details')
 
     <!-- start: Blog Section -->
     <!-- start: Blog Section -->

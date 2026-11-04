@@ -8,6 +8,7 @@
 @endphp
 @section('title', $seoTitle . ' | Forward Edge Consulting')
 @section('meta')
+    @if (!empty($isPreview))<meta name="robots" content="noindex, nofollow">@endif
     <meta name="description" content="{{ $excerpt }}">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $excerpt }}">
@@ -32,6 +33,7 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
 <script type="application/ld+json">{!! json_encode($_jsonLd) !!}</script>
 @endpush
 @push('styles')
+<link rel="stylesheet" href="{{ asset('frontend/assets/css/forms.css') }}?v=4">
     <style>
         .blog-video-frame {
             position: relative;
@@ -97,6 +99,9 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
             <div class="row row-gap-5">
                 <div class="col-lg-8">
                     <div class="post-details-wrapper">
+                        @if (!empty($isPreview))
+                            <div class="fe-preview-banner" role="status">Preview. This post is {{ $blog->status === 'scheduled' ? 'scheduled for ' . $blog->published_at->format('j M Y, g:ia') : 'a draft' }} and is only visible to you.</div>
+                        @endif
                         {{-- Blog Image --}}
                         <div class="blog-images wow fadeInUp" data-wow-delay=".1s">
                             <img src="{{ $blog->thumbnail
@@ -131,7 +136,7 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
                                 <div class="cate-text">
                                     <span class="degination">Date Released</span>
                                     <h6 class="text">
-                                        {{ $blog->created_at ? $blog->created_at->format('d F, Y') : now()->format('d F, Y') }}
+                                        {{ $blog->display_date ? $blog->display_date->format('d F, Y') : now()->format('d F, Y') }}
                                     </h6>
                                 </div>
                             </div>
@@ -154,86 +159,7 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
                                 };
                             @endphp
                             @if ($blocks->isNotEmpty())
-                                @foreach ($blocks as $block)
-                                    @switch($block->type)
-                                        @case('heading')
-                                            <h3 class="wow fadeInUp" data-wow-delay=".3s">{!! $linkify($block->contentString()) !!}</h3>
-                                            @break
-                                        @case('paragraph')
-                                            <p class="wow fadeInUp" data-wow-delay=".3s">{!! nl2br($linkify($block->contentString())) !!}</p>
-                                            @break
-                                        @case('quote')
-                                            <blockquote class="wow fadeInUp" data-wow-delay=".3s">
-                                                <p>{!! $linkify($block->contentString()) !!}</p>
-                                                <cite>{{ $block->quoteAuthor() }}</cite>
-                                            </blockquote>
-                                            @break
-                                        @case('list')
-                                            @php $items = $block->contentArray(); @endphp
-                                            @if ($items)
-                                                <ul class="wow fadeInUp" data-wow-delay=".3s">
-                                                    @foreach ($items as $item)
-                                                        <li><span><i class="tji-check"></i></span>{!! $linkify($item) !!}</li>
-                                                    @endforeach
-                                                </ul>
-                                            @endif
-                                            @break
-                                        @case('image')
-                                            @php $imageUrl = $block->imageUrl(); @endphp
-                                            @if ($imageUrl)
-                                                <figure class="image-box wow fadeInUp" data-wow-delay=".3s">
-                                                    <img src="{{ $imageUrl }}" alt="Blog Image" class="img-fluid">
-                                                    @if (!empty($block->extras['caption']))
-                                                        <figcaption class="text-muted small mt-2">{{ $block->extras['caption'] }}</figcaption>
-                                                    @endif
-                                                </figure>
-                                            @endif
-                                            @break
-                                        @case('video')
-                                            @php
-                                                $videoUrl = $block->videoUrl();
-                                                $orientation = $block->videoOrientation();
-                                                $isExternal = $block->videoIsExternal();
-                                                $isYouTube = $isExternal && \Illuminate\Support\Str::contains(strtolower($videoUrl), ['youtube.com', 'youtu.be']);
-                                                $isVimeo = $isExternal && \Illuminate\Support\Str::contains(strtolower($videoUrl), ['vimeo.com']);
-
-                                                $embedUrl = null;
-                                                if ($isYouTube) {
-                                                    if (preg_match('/v=([^&]+)/', $videoUrl, $matches)) {
-                                                        $embedUrl = 'https://www.youtube.com/embed/' . $matches[1];
-                                                    } elseif (preg_match('#youtu\\.be/([^?]+)#', $videoUrl, $matches)) {
-                                                        $embedUrl = 'https://www.youtube.com/embed/' . $matches[1];
-                                                    }
-                                                } elseif ($isVimeo && preg_match('#vimeo\\.com/(\\d+)#', $videoUrl, $matches)) {
-                                                    $embedUrl = 'https://player.vimeo.com/video/' . $matches[1];
-                                                }
-                                            @endphp
-                                            @if ($videoUrl)
-                                                <div class="blog-video-frame {{ $orientation === 'portrait' ? 'portrait' : 'landscape' }} wow fadeInUp"
-                                                    data-wow-delay=".3s">
-                                                    @if ($embedUrl)
-                                                        <iframe src="{{ $embedUrl }}" frameborder="0"
-                                                            allow="autoplay; fullscreen; picture-in-picture"
-                                                            allowfullscreen></iframe>
-                                                    @elseif ($isExternal)
-                                                        <a class="btn btn-outline-primary w-100 h-100 d-flex align-items-center justify-content-center text-center"
-                                                            href="{{ $videoUrl }}" target="_blank" rel="noopener">
-                                                            Watch video
-                                                        </a>
-                                                    @else
-                                                        <video controls preload="metadata" playsinline>
-                                                            <source src="{{ $videoUrl }}">
-                                                            Your browser does not support HTML5 video.
-                                                        </video>
-                                                    @endif
-                                                </div>
-                                            @endif
-                                            @break
-                                        @default
-                                            <p class="wow fadeInUp" data-wow-delay=".3s">{{ $block->contentString() }}</p>
-                                            @break
-                                    @endswitch
-                                @endforeach
+                                @include('user.pages.partials.blog-blocks', ['blog' => $blog, 'blocks' => $blocks, 'linkify' => $linkify])
                             @else
                                 {{-- Enhanced Dummy Content --}}
                                 <p class="wow fadeInUp" data-wow-delay=".3s">
@@ -443,7 +369,7 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
                             <div class="tj-comments__container">
                                 <div class="comment-respond">
                                     <h3 class="comment-reply-title">Leave a Comment</h3>
-                                    <form class="comment-form" method="post" action="{{ route('blog.comment.store', $blog->slug) }}">
+                                    <form class="comment-form" data-fe-loader method="post" action="{{ route('blog.comment.store', $blog->slug) }}">
                                         @csrf
                                         <div class="row g-3">
                                             <div class="col-lg-6">
@@ -469,6 +395,7 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
                                                 </div>
                                             </div>
                                             <div class="col-12 mt-3">
+                                                <x-turnstile appearance="interaction-only" />
                                                 <button type="submit" class="tj-primary-btn">
                                                     <span class="btn-text"><span>Post a comment</span></span>
                                                     <span class="btn-icon"><i class="tji-arrow-right-long"></i></span>
@@ -495,7 +422,7 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
                                             <a href="{{ route('blogs.show', $related->slug) }}">
                                                 <img src="{{ $related->thumbnail
                                                     ? asset('storage/' . $related->thumbnail)
-                                                    : asset('frontend/assets/images/blog/default.webp') }}"
+                                                    : asset('frontend/assets/images/blog/blog-1.webp') }}"
                                                     alt="{{ $related->title }}" class="img-fluid"
                                                     style="width: 80px; height: 60px; object-fit: cover;">
                                             </a>
@@ -555,6 +482,11 @@ if ($seoImage) $_jsonLd['image'] = $seoImage;
                                                 data-field-type="email"
                                                 data-field-required="1">
                                         </div>
+                                        <label class="d-flex align-items-start gap-2 mb-3" style="font-size:13px;line-height:1.4;">
+                                            <input type="checkbox" name="consent" value="1" required data-consent="I agree to receive emails from Forward Edge and accept the Privacy Policy." style="margin-top:3px;flex:none;">
+                                            <span>I agree to receive emails from Forward Edge and accept the <a href="{{ route('privacy') }}">Privacy Policy</a>.</span>
+                                        </label>
+                                        <x-turnstile appearance="interaction-only" />
                                         <button type="submit" class="tj-primary-btn btn-sm">
                                             <span class="btn-text">Subscribe</span>
                                         </button>

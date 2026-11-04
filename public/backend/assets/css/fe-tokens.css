@@ -1,0 +1,50 @@
+/*
+ * Forward Edge admin tokens: the Bexon palette, used with intent.
+ * Navy is the chrome, sky blue is links and focus, yellow is the one action colour.
+ * Green, amber and red are only ever status.
+ */
+:root {
+  --fe-font: "Mona Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --fe-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  --fe-bg: #f7f9fb;
+  --fe-surface: #ffffff;
+  --fe-surface-2: #f6f8fa;
+  --fe-text: #0b2236;
+  --fe-text-2: #33495a;
+  --fe-text-3: #5a6e7d;
+  --fe-line: #e6ecf1;
+  --fe-line-strong: #d3dde5;
+
+  --fe-ink: #0b2236;          /* deepest navy: sidebar */
+  --fe-navy: #153f5d;         /* Bexon dark: banners, feature cards */
+  --fe-navy-2: #1d5379;
+  --fe-accent: #2c99d4;       /* Bexon blue */
+  --fe-accent-strong: #1a76a8;
+  --fe-accent-hover: #155f89;
+  --fe-accent-soft: rgba(44, 153, 212, 0.12);
+
+  --fe-yellow: #fdb714;       /* Bexon yellow: the action colour */
+  --fe-yellow-hover: #f0a800;
+  --fe-yellow-soft: #fff3cf;
+  --fe-yellow-ink: #6b4a00;
+
+  --fe-danger: #b42318;
+  --fe-danger-soft: rgba(180, 35, 24, 0.09);
+  --fe-success: #1b7a4f;
+  --fe-success-soft: rgba(27, 122, 79, 0.12);
+  --fe-warn: #8a5a00;
+  --fe-warn-soft: #fff3cf;
+
+  --fe-r-sm: 6px;
+  --fe-r-md: 10px;
+  --fe-r-lg: 14px;
+  --fe-r-xl: 16px;
+  --fe-r-full: 999px;
+
+  --fe-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --fe-ring: 0 0 0 2px var(--fe-surface), 0 0 0 4px var(--fe-accent);
+
+  --fe-sidebar-width: 244px;
+  --fe-header-height: 56px;
+}

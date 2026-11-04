@@ -97,25 +97,23 @@
     {{-- Gallery Grid --}}
     <div class="row g-4">
         @forelse($photos as $photo)
-            <div class="col-md-3">
+            <div class="col-6 col-md-4 col-xl-3">
                 <div class="card gallery-card">
                     <div class="gallery-image-wrapper">
                         <img src="{{ asset('storage/'.$photo->image) }}"
                              class="card-img-top fixed-size-img" alt="{{ $photo->title }}">
-                        <div class="overlay">
-                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                data-bs-target="#editPhotoModal{{ $photo->id }}">Edit</button>
-                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#deletePhotoModal{{ $photo->id }}">Delete</button>
-                        </div>
                     </div>
-                    <div class="card-body text-center py-3 px-2">
+                    <div class="card-body px-3 py-3">
                         <h6 class="mb-1 text-truncate">{{ $photo->title ?? 'Untitled' }}</h6>
                         @if($photo->category)
-                            <span class="badge rounded-pill" style="background:rgba(14,165,233,.12);color:#0369a1;font-size:0.72rem;">
-                                {{ $photo->category }}
-                            </span>
+                            <span class="badge bg-info">{{ $photo->category }}</span>
                         @endif
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-sm btn-outline-secondary flex-fill" data-bs-toggle="modal"
+                                data-bs-target="#editPhotoModal{{ $photo->id }}">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger flex-fill" data-bs-toggle="modal"
+                                data-bs-target="#deletePhotoModal{{ $photo->id }}">Delete</button>
+                        </div>
                     </div>
                 </div>
             </div>

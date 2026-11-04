@@ -43,15 +43,14 @@
                             <td class="py-4 px-4">{{ Str::limit($faq->answer, 60) }}</td>
                             <td class="py-4 px-4 text-center">
                                 <!-- Edit Button triggers another modal -->
-                                <button class="btn btn-sm btn-outline-warning rounded-pill px-3 py-2 me-2"
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2 me-2"
                                         data-bs-toggle="modal" data-bs-target="#editFaqModal{{ $faq->id }}">
                                     <i class="bi bi-pencil"></i> Edit
                                 </button>
                                 <!-- Delete -->
-                                <form action="{{ route('admin.faqs.destroy', $faq->id) }}" method="POST" class="d-inline">
+                                <form data-confirm="“{{ Str::limit($faq->question, 80) }}” will be removed from the website." data-confirm-title="Delete this FAQ?" data-confirm-action="Delete" action="{{ route('admin.faqs.destroy', $faq->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2"
-                                        onclick="return confirm('Delete this FAQ?')">
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2">
                                         <i class="bi bi-trash"></i> Delete
                                     </button>
                                 </form>

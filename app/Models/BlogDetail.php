@@ -29,6 +29,12 @@ class BlogDetail extends Model
         return is_array($decoded) ? array_values(array_filter($decoded, fn($item) => filled($item))) : [];
     }
 
+    /** Paragraphs saved by the editor hold cleaned HTML; older ones are plain text. */
+    public function isHtml(): bool
+    {
+        return ($this->extras['format'] ?? null) === 'html';
+    }
+
     public function contentString(): string
     {
         $value = $this->attributes['content'] ?? '';

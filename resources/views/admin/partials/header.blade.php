@@ -1,118 +1,35 @@
 <header id="header" class="header fixed-top fe-admin-header">
-    @php
-        use Illuminate\Support\Facades\Storage;
+    <div class="fe-header-inner">
+        <button class="fe-icon-btn toggle-sidebar-btn" type="button" aria-label="Toggle navigation">
+            <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+        <a href="{{ route('dashboard') }}" class="fe-brand d-xl-none">
+            <img src="{{ asset('frontend/assets/images/logos/logo.png') }}" alt="Forward Edge Consulting" width="62" height="32">
+        </a>
 
-        $user = auth()->user();
-        $avatarPath = $user?->profile_photo_path ?? ($user?->avatar ?? null);
+        <button type="button" class="fe-jump" id="feJump" aria-haspopup="dialog" aria-label="Search or jump to a page">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <span>Search or jump to…</span>
+            <kbd class="fe-kbd">Ctrl K</kbd>
+        </button>
 
-        if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-            $avatarUrl = asset('storage/' . $avatarPath);
-        } elseif ($user && method_exists($user, 'profile_photo_url') && $user->profile_photo_url) {
-            $avatarUrl = $user->profile_photo_url;
-        } else {
-            $avatarUrl = asset('assets/img/profile-img.jpg');
-        }
-
-        $subtitle = $user?->job_title ?? ($user?->role_name ?? ($user?->position ?? null));
-    @endphp
-
-    <div class="fe-header-inner container-fluid">
-        <div class="fe-header-brand d-flex align-items-center gap-3">
-            <button class="btn fe-sidebar-toggle toggle-sidebar-btn d-inline-flex align-items-center justify-content-center"
-                type="button" aria-label="Toggle navigation">
-                <i class="bi bi-list"></i>
-            </button>
-
-            <a href="{{ route('dashboard') }}" class="fe-brand d-flex align-items-center gap-3 text-decoration-none">
-                <span class="fe-brand-icon d-inline-flex align-items-center justify-content-center">
-                    <img src="{{ asset('frontend/assets/images/fav.png') }}" alt="ForwardEdge" class="img-fluid">
-                </span>
-                <span class="d-flex flex-column">
-                    <span class="fe-brand-title">ForwardEdge</span>
-                    <small class="fe-brand-subtitle text-uppercase">Admin control hub</small>
-                </span>
-            </a>
-        </div>
-
-        <div class="fe-header-pills d-none d-lg-flex align-items-center gap-2">
-            <span class="fe-header-pill">
-                <span class="d-inline-block rounded-circle me-1" style="width:7px;height:7px;background:#10b981"></span>
-                Live
-            </span>
-            <span class="fe-header-pill">
-                <i class="bi bi-clock me-1"></i>
-                {{ now()->format('D, M j') }}
-            </span>
-        </div>
-
-        <div class="fe-header-actions d-flex align-items-center gap-2 ms-auto">
-            <a href="{{ route('pb.pages') }}"
-                class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex align-items-center gap-2">
-                <i class="bi bi-layout-text-window-reverse"></i>
-                Pages
-            </a>
-
-            <a href="{{ route('admin.courses.create') }}"
-                class="btn btn-primary btn-sm d-none d-md-inline-flex align-items-center gap-2">
-                <i class="bi bi-plus"></i>
-                New Training
-            </a>
-
-            <div class="vr d-none d-lg-block"></div>
-
-            @auth
-                <div class="dropdown">
-                    <button class="btn fe-profile-trigger d-flex align-items-center gap-2" type="button"
-                        id="feProfileMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="fe-user-state d-none d-xl-flex flex-column text-start">
-                            <small class="text-muted text-uppercase">Signed in as</small>
-                            <strong>{{ $user->name }}</strong>
-                        </span>
-                        <img src="{{ asset('backend/assets/img/avatar-2.jpg') }}" alt="{{ $user->name }}" class="rounded-circle"
-                            style="width:42px;height:42px;object-fit:cover;">
-                        <i class="bi bi-chevron-down small text-muted"></i>
-                    </button>
-
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile" aria-labelledby="feProfileMenu">
-                        <li class="dropdown-header text-start">
-                            <h6 class="mb-0">{{ $user->name }}</h6>
-                            <span>{{ $subtitle ?? $user->email }}</span>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <i class="bi bi-person me-2"></i>
-                                <span>My Profile</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <i class="bi bi-gear me-2"></i>
-                                <span>Account Settings</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item d-flex align-items-center">
-                                    <i class="bi bi-box-arrow-right me-2"></i>
-                                    <span>Sign Out</span>
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            @endauth
+        <div class="fe-header-actions">
+            <div class="dropdown">
+                <button class="btn btn-primary fe-new" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i><span>New</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end fe-new-menu">
+                    <li><a class="dropdown-item" href="{{ route('admin.events.create') }}"><i class="bi bi-calendar-event" aria-hidden="true"></i>Event</a></li>
+                    <li>
+                        <form method="POST" action="{{ route('admin.blogs.store') }}" class="m-0">@csrf
+                            <button class="dropdown-item" type="submit"><i class="bi bi-journal-text" aria-hidden="true"></i>Blog post</button>
+                        </form>
+                    </li>
+                    <li><a class="dropdown-item" href="{{ route('pb.pages.create') }}"><i class="bi bi-file-earmark-richtext" aria-hidden="true"></i>Page</a></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.forms.create') }}"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i>Form</a></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.services.add') }}"><i class="bi bi-briefcase" aria-hidden="true"></i>Service</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </header>

@@ -22,19 +22,19 @@
                     <div class="legal-card border rounded-4 shadow-sm p-4 p-md-5 mb-4 bg-white">
                         <h3 class="h4 mb-3">1. Using our websites & platforms</h3>
                         <p class="mb-3">
-                            Keep your account credentials secure, provide accurate information, and only use our content for
+                            Provide accurate information when contacting us or registering for events, and only use our content for
                             lawful internal business or learning purposes. We may suspend or restrict access if suspicious or
                             abusive activity is detected.
                         </p>
                         <ul class="ps-3">
                             <li>Do not copy, reverse engineer, or resell our content without written consent.</li>
-                            <li>Respect intellectual property notices on reports, templates, media assets, and course material.</li>
+                            <li>Respect intellectual property notices on reports, templates, and media assets.</li>
                             <li>Any third-party software or integrations remain subject to the vendor’s licensing rules.</li>
                         </ul>
                     </div>
 
                     <div class="legal-card border rounded-4 shadow-sm p-4 p-md-5 mb-4 bg-white">
-                        <h3 class="h4 mb-3">2. Bookings, enrolments & billing</h3>
+                        <h3 class="h4 mb-3">2. Event bookings & service agreements</h3>
                         <p class="mb-3">
                             Pricing, availability, and timelines are shared at the point of registration. Your seat is confirmed
                             after payment or a signed agreement. Unless otherwise stated, fees are non-refundable once a cohort

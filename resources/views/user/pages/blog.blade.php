@@ -12,7 +12,7 @@
                             <article class="blog-item wow fadeInUp" data-wow-delay=".{{ $loop->iteration }}s">
                                 <div class="blog-thumb">
                                     <a href="{{ route('blogs.show', $blog->slug) }}">
-                                        <img src="{{ $blog->thumbnail ? asset('storage/' . $blog->thumbnail) : asset('frontend/assets/images/blog/default.webp') }}"
+                                        <img src="{{ $blog->thumbnail ? asset('storage/' . $blog->thumbnail) : asset('frontend/assets/images/blog/blog-1.webp') }}"
                                             alt="{{ $blog->title }}" class="img-fluid"
                                             style="height: 250px; width: 100%; object-fit: cover; border-radius: 8px;">
                                     </a>
@@ -113,7 +113,7 @@
                                     <li>
                                         <div class="post-thumb">
                                             <a href="{{ route('blogs.show', $post->slug) }}">
-                                                <img src="{{ $post->thumbnail ? asset('storage/' . $post->thumbnail) : asset('frontend/assets/images/blog/default.webp') }}"
+                                                <img src="{{ $post->thumbnail ? asset('storage/' . $post->thumbnail) : asset('frontend/assets/images/blog/blog-1.webp') }}"
                                                     alt="{{ $post->title }}"
                                                     style="height:60px; width:60px; object-fit:cover; border-radius:4px;">
                                             </a>

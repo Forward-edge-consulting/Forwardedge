@@ -13,6 +13,20 @@ final class PageBlueprint
     public static function allowedTypes(): array
     {
         return [
+            // Current sections
+            'page_header',
+            'rich_text',
+            'stats',
+            'form',
+            'events_grid',
+            'event_facts',
+            'cta_band',
+            'faq_list',
+            'feature_grid',
+            'steps',
+            'quote_list',
+            'contact_info',
+            // Classic sections
             'hero',
             'hero2',
             'hero3',
@@ -30,11 +44,21 @@ final class PageBlueprint
             'marquees',
             'gallary',        // (spelled this way to match the provided blade)
             'testimonial',
-            'pricing',
             'faq',
             'closing_cta',
-            'table',
         ];
+    }
+
+    /** Sections built in the current design. Pages that use them scroll natively so jump links and keyboard focus work. */
+    public static function modernTypes(): array
+    {
+        return ['page_header', 'rich_text', 'stats', 'form', 'events_grid', 'event_facts', 'cta_band', 'faq_list', 'feature_grid', 'steps', 'quote_list', 'contact_info'];
+    }
+
+    /** Types offered when adding a section. The two older form blocks keep rendering but are no longer offered. */
+    public static function pickerTypes(): array
+    {
+        return array_values(array_diff(self::allowedTypes(), ['form_dark', 'form_light']));
     }
 
     public static function ensureValidType(string $type): void
@@ -55,6 +79,130 @@ final class PageBlueprint
         $fileImg = ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'];
 
         return match ($type) {
+
+            /* ================= PAGE HEADER ================= */
+            'page_header' => [
+                'kicker'         => ['nullable', 'string', 'max:80'],
+                'title'          => ['required', 'string', 'max:180'],
+                'subtitle'       => ['nullable', 'string', 'max:400'],
+                'primary_text'   => ['nullable', 'string', 'max:60'],
+                'primary_link'   => self::linkRule(),
+                'secondary_text' => ['nullable', 'string', 'max:60'],
+                'secondary_link' => self::linkRule(),
+                'image'          => $fileImg,
+                'image_alt'      => ['nullable', 'string', 'max:160'],
+            ],
+
+            /* ================= RICH TEXT ================= */
+            'rich_text' => [
+                'title' => ['nullable', 'string', 'max:180'],
+                'body'  => ['required', 'string', 'max:30000'],
+                'width' => ['nullable', Rule::in(['narrow', 'wide'])],
+                'tone'  => ['nullable', Rule::in(['white', 'tint'])],
+            ],
+
+            /* ================= STATS ================= */
+            'stats' => [
+                'title'          => ['nullable', 'string', 'max:160'],
+                'subtitle'       => ['nullable', 'string', 'max:320'],
+                'tone'           => ['nullable', Rule::in(['white', 'tint', 'navy'])],
+                'items'          => ['required', 'array', 'min:1', 'max:8'],
+                'items.*.value'  => ['required', 'string', 'max:24'],
+                'items.*.label'  => ['required', 'string', 'max:90'],
+            ],
+
+            /* ================= FORM (from Admin > Forms) ================= */
+            'form' => [
+                'form_id' => ['required', 'integer', 'exists:forms,id'],
+                'title'   => ['nullable', 'string', 'max:160'],
+                'intro'   => ['nullable', 'string', 'max:400'],
+                'tone'    => ['nullable', Rule::in(['white', 'tint', 'navy'])],
+            ],
+
+            /* ================= EVENTS LIST ================= */
+            'events_grid' => [
+                'title'      => ['nullable', 'string', 'max:160'],
+                'subtitle'   => ['nullable', 'string', 'max:320'],
+                'show'       => ['required', Rule::in(['upcoming', 'past', 'all'])],
+                'event_type' => ['nullable', 'string', 'max:40'],
+                'category_id' => ['nullable', 'integer', 'exists:event_categories,id'],
+                'limit'      => ['nullable', 'integer', 'min:1', 'max:12'],
+                'link_text'  => ['nullable', 'string', 'max:60'],
+                'link'       => self::linkRule(),
+            ],
+
+            /* ================= EVENT FACTS (date, place, type of the linked event) ================= */
+            'event_facts' => [
+                'title'       => ['nullable', 'string', 'max:120'],
+                'note'        => ['nullable', 'string', 'max:300'],
+                'button_text' => ['nullable', 'string', 'max:60'],
+                'button_link' => self::linkRule(),
+            ],
+
+            /* ================= FAQ LIST ================= */
+            'faq_list' => [
+                'title'       => ['nullable', 'string', 'max:160'],
+                'subtitle'    => ['nullable', 'string', 'max:320'],
+                'tone'        => ['nullable', Rule::in(['white', 'tint'])],
+                'items'       => ['required', 'array', 'min:1', 'max:50'],
+                'items.*.q'   => ['required', 'string', 'max:200'],
+                'items.*.a'   => ['required', 'string', 'max:1200'],
+            ],
+
+            /* ================= FEATURE GRID (cards: what you get, services, benefits) ================= */
+            'feature_grid' => [
+                'title'           => ['nullable', 'string', 'max:160'],
+                'subtitle'        => ['nullable', 'string', 'max:320'],
+                'tone'            => ['nullable', Rule::in(['white', 'tint', 'navy'])],
+                'columns'         => ['nullable', Rule::in(['2', '3', '4'])],
+                'items'           => ['required', 'array', 'min:1', 'max:12'],
+                'items.*.title'   => ['required', 'string', 'max:100'],
+                'items.*.text'    => ['nullable', 'string', 'max:400'],
+                'items.*.link_text' => ['nullable', 'string', 'max:60'],
+                'items.*.link'    => self::linkRule(),
+            ],
+
+            /* ================= STEPS (numbered process) ================= */
+            'steps' => [
+                'title'           => ['nullable', 'string', 'max:160'],
+                'subtitle'        => ['nullable', 'string', 'max:320'],
+                'tone'            => ['nullable', Rule::in(['white', 'tint'])],
+                'items'           => ['required', 'array', 'min:2', 'max:8'],
+                'items.*.title'   => ['required', 'string', 'max:100'],
+                'items.*.text'    => ['nullable', 'string', 'max:400'],
+            ],
+
+            /* ================= QUOTES (testimonials) ================= */
+            'quote_list' => [
+                'title'           => ['nullable', 'string', 'max:160'],
+                'tone'            => ['nullable', Rule::in(['white', 'tint'])],
+                'items'           => ['required', 'array', 'min:1', 'max:6'],
+                'items.*.quote'   => ['required', 'string', 'max:600'],
+                'items.*.name'    => ['required', 'string', 'max:80'],
+                'items.*.role'    => ['nullable', 'string', 'max:120'],
+            ],
+
+            /* ================= CONTACT INFO ================= */
+            'contact_info' => [
+                'title'           => ['nullable', 'string', 'max:160'],
+                'subtitle'        => ['nullable', 'string', 'max:320'],
+                'tone'            => ['nullable', Rule::in(['white', 'tint'])],
+                'email'           => ['nullable', 'email', 'max:150'],
+                'phone'           => ['nullable', 'string', 'max:40'],
+                'address'         => ['nullable', 'string', 'max:300'],
+                'hours'           => ['nullable', 'string', 'max:200'],
+            ],
+
+            /* ================= CTA BAND ================= */
+            'cta_band' => [
+                'title'          => ['required', 'string', 'max:200'],
+                'subtitle'       => ['nullable', 'string', 'max:320'],
+                'primary_text'   => ['nullable', 'string', 'max:60'],
+                'primary_link'   => self::linkRule(),
+                'secondary_text' => ['nullable', 'string', 'max:60'],
+                'secondary_link' => self::linkRule(),
+            ],
+
             /* ================= HERO (legacy) ================= */
             'hero' => [
                 'title'        => ['required', 'string', 'max:180'],
@@ -112,30 +260,6 @@ final class PageBlueprint
                 'items.*.image'     => $fileImg, // file upload
                 'items.*.link_text' => ['nullable', 'string', 'max:60'],
                 'items.*.link'      => self::linkRule(),
-            ],
-
-            'pricing' => [
-                'sidebar_kicker'       => ['nullable', 'string', 'max:120'],
-                'title'                => ['required', 'string', 'max:160'],
-                'desc'                 => ['nullable', 'string', 'max:600'],
-                'link_text'            => ['nullable', 'string', 'max:60'],
-                'link'                 => self::linkRule(),
-
-                // Plans - require at least 1 non-empty plan
-                'plans'                => ['required', 'array', 'min:1', 'max:6'],
-                'plans.*.title'        => ['required', 'string', 'max:120'],
-                'plans.*.subtitle'     => ['nullable', 'string', 'max:160'],
-                'plans.*.price_naira'  => ['nullable', 'string', 'max:40'],
-                'plans.*.price_usd'    => ['nullable', 'string', 'max:40'],
-                'plans.*.course_id'       => ['nullable', 'integer', 'exists:courses,id'],
-                'plans.*.course_content_id'=> ['nullable', 'integer', 'exists:course_contents,id'],
-
-                // Features - array is optional, but if present items must be strings
-                'plans.*.features'     => ['nullable', 'array', 'max:30'],
-                'plans.*.features.*'   => ['string', 'max:140'], // Removed 'required_with'
-
-                'plans.*.link_text'    => ['nullable', 'string', 'max:60'],
-                'plans.*.link'         => self::linkRule(),
             ],
 
             'about' => [
@@ -370,18 +494,6 @@ final class PageBlueprint
                 'brands.*.href' => self::linkRule(),
             ],
 
-            'table' => [
-                'title' => ['nullable', 'string', 'max:180'],
-                'subtitle' => ['nullable', 'string', 'max:320'],
-                'table_source' => ['required', Rule::in(['enrollments', 'course_contents'])],
-                'header_count' => ['nullable', 'integer', 'min:1', 'max:8'],
-                'headers' => ['required', 'array', 'min:1', 'max:8'],
-                'headers.*.column' => ['required', 'string', 'max:120'],
-                'amount_filter' => ['nullable', Rule::in(['any', 'free', 'paid', 'zero'])],
-            ],
-
-  
-
             default => ['_' => ['prohibited']],
         };
     }
@@ -414,11 +526,12 @@ final class PageBlueprint
                     return;
                 }
 
-                if (is_string($value) && str_starts_with($value, '/')) {
+                // an internal path, or a jump to a section on the same page (#interest)
+                if (is_string($value) && (str_starts_with($value, '/') || preg_match('/^#[A-Za-z][\w\-:.]*$/', $value))) {
                     return;
                 }
 
-                $fail('The ' . $attribute . ' must be a valid URL or an internal path starting with /.');
+                $fail('The ' . $attribute . ' must be a valid URL, an internal path starting with /, or an in-page link like #interest.');
             },
         ];
     }

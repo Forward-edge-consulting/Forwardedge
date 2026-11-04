@@ -1,105 +1,76 @@
 @extends('user.master_page')
-@section('title', ' Events and Training | Forward Edge Consulting')
-@section('main')
-    @include('user.partials.breadcrumb')
-    <section class="tj-project-section section-gap">
-        <div class="container">
-            <div class="row row-gap-4">
-                @forelse ($events as $event)
-                    <div class="col-xl-4 col-md-6">
-                        <div class="project-item wow fadeInUp" data-wow-delay=".1s">
-                            <div class="project-img" style="height:420px; overflow:hidden;">
-                                @if ($event->thumbnail)
-                                    <img src="{{ asset('storage/' . $event->thumbnail) }}" alt="{{ $event->title }}"
-                                        style="width:100%; height:100%; object-fit:cover; object-position:center;">
-                                @else
-                                    <img src="{{ asset('frontend/assets/images/project/project-6.webp') }}"
-                                        alt="Default Image">
-                                @endif
-                            </div>
-                            <div class="project-content">
-                                <span class="categories"><a href="javascript:void(0)">{{ $event->type }}</a></span>
-                                <div class="project-text">
-                                    <h4 class="title">
-                                        <a href="{{ route('events.show', $event->slug) }}">{{ $event->title }}</a>
-                                    </h4>
-                                    <a class="project-btn" href="{{ route('events.show', $event->slug) }}"><i
-                                            class="tji-arrow-right-big"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-12">
-                        <div class="empty-wrap">
-                            <!-- EVENTS SVG -->
-                            <svg class="empty-svg" viewBox="0 0 400 260" role="img" aria-label="New events coming soon">
-                                <defs>
-                                    <linearGradient id="gb" x1="0" y1="0" x2="1"
-                                        y2="1">
-                                        <stop offset="0%" stop-color="#FDB714" />
-                                        <stop offset="100%" stop-color="#2c99d4" />
-                                    </linearGradient>
-                                    <linearGradient id="gbSoft" x1="0" y1="0" x2="1"
-                                        y2="1">
-                                        <stop offset="0%" stop-color="#FDB714" stop-opacity=".15" />
-                                        <stop offset="100%" stop-color="#2c99d4" stop-opacity=".15" />
-                                    </linearGradient>
-                                </defs>
-                                <!-- soft blob background -->
-                                <ellipse cx="200" cy="170" rx="160" ry="70" fill="url(#gbSoft)" />
-                                <!-- calendar -->
-                                <rect x="90" y="40" rx="14" ry="14" width="220" height="150"
-                                    fill="#fff" stroke="url(#gb)" stroke-width="3" />
-                                <rect x="90" y="70" width="220" height="30" fill="url(#gb)" opacity=".1" />
-                                <circle cx="140" cy="55" r="8" fill="url(#gb)" />
-                                <circle cx="260" cy="55" r="8" fill="url(#gb)" />
-                                <!-- smile + confetti -->
-                                <circle cx="200" cy="130" r="34" fill="none" stroke="url(#gb)"
-                                    stroke-width="3" />
-                                <circle cx="187" cy="125" r="4" fill="#2c99d4" />
-                                <circle cx="213" cy="125" r="4" fill="#2c99d4" />
-                                <path d="M186 140q14 12 28 0" fill="none" stroke="#FDB714" stroke-width="3"
-                                    stroke-linecap="round" />
-                                <g opacity=".9">
-                                    <path d="M120 95l8-8" stroke="#FDB714" stroke-width="3" stroke-linecap="round" />
-                                    <path d="M280 95l8-8" stroke="#2c99d4" stroke-width="3" stroke-linecap="round" />
-                                    <circle cx="305" cy="120" r="3" fill="#FDB714" />
-                                    <circle cx="105" cy="120" r="3" fill="#2c99d4" />
-                                </g>
-                                <!-- title -->
-                                <text x="200" y="210" text-anchor="middle" font-family="Inter, ui-sans-serif"
-                                    font-size="18" fill="#222">
-                                    New events coming soon
-                                </text>
-                            </svg>
-                            <p class="empty-text">We’re lining up fresh bootcamp events. Check back shortly!</p>
-                            <a href="{{ route('contact') }}" class="btn btn-gradient">Notify me</a>
-                        </div>
-                    </div>
-                @endforelse
-            </div>
+@section('body_attributes', 'data-native-scroll')
+@section('title', 'Events and Programmes | Forward Edge Consulting')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/pages.css') }}?v=3">
+@endpush
 
-            {{-- ✅ Dynamic Pagination --}}
-            <div class="tj-pagination d-flex justify-content-center mt-4">
-                {{ $events->links('vendor.pagination.custom') }}
+@section('main')
+<section class="fe-pb fe-pb-header fe-ev-head">
+    <div class="container">
+        <p class="fe-pb-kicker">Events and programmes</p>
+        <h1>Where we teach, convene and show up</h1>
+        <p class="fe-pb-lead">Bootcamps, workshops and programmes from Forward Edge, and a record of the ones we have already run.</p>
+
+        <nav class="fe-ev-tabs" aria-label="Upcoming or past">
+            <a href="{{ route('events.index', array_filter(['when' => 'upcoming', 'category' => $active?->slug])) }}" @class(['is-current' => $when === 'upcoming']) @if ($when === 'upcoming') aria-current="page" @endif>Upcoming <span class="fe-num">{{ $upcomingCount }}</span></a>
+            <a href="{{ route('events.index', array_filter(['when' => 'past', 'category' => $active?->slug])) }}" @class(['is-current' => $when === 'past']) @if ($when === 'past') aria-current="page" @endif>Past <span class="fe-num">{{ $pastCount }}</span></a>
+        </nav>
+
+        @if ($categories->count() > 1 || $active)
+            <div class="fe-ev-chips" role="group" aria-label="Category">
+                <a href="{{ route('events.index', ['when' => $when]) }}" @class(['is-current' => !$active])>All</a>
+                @foreach ($categories as $c)
+                    <a href="{{ route('events.index', ['when' => $when, 'category' => $c->slug]) }}" @class(['is-current' => $active?->id === $c->id])>{{ $c->name }} <span class="fe-num">{{ $c->n }}</span></a>
+                @endforeach
             </div>
-            {{-- <div class="tj-pagination d-flex justify-content-center">
-              <ul>
-                <li>
-                  <span aria-current="page" class="page-numbers current">1</span>
-                </li>
-                <li>
-                  <a class="page-numbers" href="#">2</a>
-                </li>
-                <li>
-                  <a class="page-numbers" href="#">3</a>
-                </li>
-                <li>
-                  <a class="next page-numbers" href="#"><i class="tji-arrow-right-long"></i></a>
-                </li>
-              </ul>
-            </div> --}}
-        </div>
-    </section>
+        @endif
+    </div>
+</section>
+
+<section class="fe-pb" style="padding-top:24px">
+    <div class="container">
+        @if ($events->isEmpty())
+            <p class="fe-pb-muted fe-ev-empty">
+                @if ($when === 'upcoming')
+                    Nothing is scheduled right now. @if ($pastCount > 0) See <a class="fe-pb-link" href="{{ route('events.index', ['when' => 'past']) }}">what we have already run</a>, or @endif <a class="fe-pb-link" href="{{ route('contact') }}">get in touch</a> and we will tell you about the next one.
+                @else
+                    Nothing here yet.
+                @endif
+            </p>
+        @elseif ($when === 'upcoming')
+            <ul class="fe-pb-events">
+                @foreach ($events as $event)
+                    <li>
+                        <a href="{{ route('events.show', $event->slug) }}">
+                            <span class="fe-pb-edate">{{ $event->start_date?->format('j M Y') }}</span>
+                            <span class="fe-pb-etitle">{{ $event->title }}<small>{{ $event->location }}</small></span>
+                            <span class="fe-pb-etype">{{ $event->category_label }}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <div class="fe-ev-wall">
+                @foreach ($events as $event)
+                    <article class="fe-ev-card">
+                        <a href="{{ route('events.show', $event->slug) }}">
+                            @if ($event->thumbnail)
+                                <figure><img src="{{ asset('storage/' . $event->thumbnail) }}" alt="" loading="lazy"></figure>
+                            @endif
+                            <div class="fe-ev-card-body">
+                                <span class="fe-pb-etype">{{ $event->category_label }}</span>
+                                <h2>{{ $event->title }}</h2>
+                                <p class="fe-ev-meta">{{ $event->start_date?->format('j M Y') }}@if ($event->location), {{ $event->location }}@endif</p>
+                                @if ($event->highlight_line)<p class="fe-ev-high">{{ $event->highlight_line }}</p>@endif
+                            </div>
+                        </a>
+                    </article>
+                @endforeach
+            </div>
+        @endif
+
+        <div class="tj-pagination d-flex justify-content-center mt-4">{{ $events->links('vendor.pagination.custom') }}</div>
+    </div>
+</section>
 @endsection

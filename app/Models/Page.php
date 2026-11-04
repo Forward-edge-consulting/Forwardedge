@@ -26,6 +26,12 @@ class Page extends Model
         'show_on_events' => 'boolean',
     ];
 
+    /** Course-owned pages remain archived and cannot be served or managed. */
+    public function scopeForWebsite($query)
+    {
+        return $query->where(fn ($q) => $q->whereNull('pageable_type')->orWhere('pageable_type', Event::class));
+    }
+
     public function blocks(): HasMany
     {
         return $this->hasMany(Block::class)
@@ -50,7 +56,6 @@ class Page extends Model
         }
 
         return match ($this->pageable_type) {
-            Course::class => 'Course',
             Event::class => 'Event',
             default => 'Unknown'
         };

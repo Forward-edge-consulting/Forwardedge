@@ -1,0 +1,8 @@
+Source: Unsplash
+Photo page: https://unsplash.com/photos/l6iKdDtkirk
+Image: https://images.unsplash.com/photo-1573497619860-6d82917e4ec8
+Downloaded 28 October 2026. Blue overlay applied with CSS.
+
+Monitoring theme: Kampus Production / Pexels, https://www.pexels.com/photo/woman-in-yellow-long-sleeve-shirt-looking-at-computer-data-8204353/
+Stock technology and data-monitoring scenes, not documentation of an actual Forward Edge SOC.
+Bootcamp community: existing Forward Edge gallery photo, gallery/mOBTAPVHDyVRgSq8cUorP45XF2Z5SUYpOlCt0a0z.jpg.

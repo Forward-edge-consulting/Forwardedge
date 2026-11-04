@@ -14,7 +14,7 @@
                         <h2 class="fw-bold mb-3">Forward Edge Consulting – Privacy Policy</h2>
                         <p class="lead text-muted">
                             Your trust matters to us. This statement outlines the personal information we collect, why we
-                            collect it, and how we keep it secure across our websites, marketing channels, training platforms,
+                            collect it, and how we keep it secure across our websites, marketing channels, event registrations,
                             and support workflows.
                         </p>
                     </div>
@@ -23,9 +23,9 @@
                         <h3 class="h4 mb-3">1. Information we collect</h3>
                         <p class="mb-3">We collect information in three ways:</p>
                         <ul class="ps-3 mb-0">
-                            <li><strong>Information you share</strong> such as names, emails, company details, enrolment forms, or payment confirmations.</li>
+                            <li><strong>Information you share</strong> such as names, emails, company details, event registration forms, or service enquiries.</li>
                             <li><strong>Automated data</strong> like device type, IP address, and analytics events that help us measure platform performance.</li>
-                            <li><strong>Third-party sources</strong> (e.g., payment processors, learning tools) that confirm transactions or course progress.</li>
+                            <li><strong>Third-party sources</strong> such as mailing-list providers used to manage newsletter subscriptions.</li>
                         </ul>
                     </div>
 
@@ -34,7 +34,7 @@
                         <p class="mb-3">The data helps us:</p>
                         <ul class="ps-3">
                             <li>Deliver services, certificates, and updates related to your program or project.</li>
-                            <li>Respond to support requests, learning assessments, or product demos.</li>
+                            <li>Respond to support requests, event enquiries, or consultations.</li>
                             <li>Send marketing content when you opt-in (you can unsubscribe any time).</li>
                             <li>Improve site reliability, cyber security posture, and quality assurance.</li>
                         </ul>
@@ -57,7 +57,7 @@
                             rights, email <a href="mailto:info@forwardedgeconsulting.com">info@forwardedgeconsulting.com</a> with a short description of your request.
                         </p>
                         <p class="mb-0">
-                            We will respond within 30 days and may ask for verification to protect your account.
+                            We will respond within 30 days and may ask for verification to protect your personal information.
                         </p>
                     </div>
 

@@ -3,15 +3,13 @@
 
 @section('main')
 <div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="pagetitle">
     <div>
-      <h3 class="mb-0">Page Builder</h3>
-      <p class="text-muted mb-0">Create and manage dynamic pages for courses, events, and more</p>
+      <h1>Pages</h1>
+      <p class="fe-title-sub">Website pages and event landing pages.</p>
     </div>
 
-    <button class="btn btn-primary" id="openCreateModal" type="button">
-      <i class="bi bi-plus-lg me-2"></i>Create Page
-    </button>
+    <button class="btn btn-primary" id="openCreateModal" type="button">Create page</button>
   </div>
 
   {{-- Flash Messages --}}
@@ -60,14 +58,10 @@
               @php
                 $typeDisplay = 'Standalone';
                 $typeBadge   = 'secondary';
-                if ($p->pageable_type === \App\Models\Course::class) {
-                    $typeDisplay = 'Course';  $typeBadge = 'info';
-                } elseif ($p->pageable_type === \App\Models\Event::class) {
+                if ($p->pageable_type === \App\Models\Event::class) {
                     $typeDisplay = 'Event';   $typeBadge = 'warning';
                 }
-                $ownerType = $p->pageable_type === \App\Models\Course::class
-                    ? 'course'
-                    : ($p->pageable_type === \App\Models\Event::class ? 'event' : '');
+                $ownerType = $p->pageable_type === \App\Models\Event::class ? 'event' : '';
               @endphp
               <tr>
                 <td>
@@ -127,8 +121,7 @@
                     </a>
 
                     {{-- Delete --}}
-                    <form class="d-inline" method="post" action="{{ route('pb.pages.destroy', $p) }}"
-                          onsubmit="return confirm('Delete this page and all its blocks?')">
+                    <form data-confirm="“{{ $p->title }}” and all of its blocks will be permanently removed." data-confirm-title="Delete this page?" data-confirm-action="Delete" class="d-inline" method="post" action="{{ route('pb.pages.destroy', $p) }}">
                       @csrf @method('DELETE')
                       <button class="btn btn-outline-danger btn-sm" type="submit">
                         <i class="bi bi-trash me-1"></i>Delete
@@ -198,24 +191,10 @@
                   <label class="form-check-label" for="type_standalone">Standalone Page</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="owner_type" value="course" id="type_course">
-                  <label class="form-check-label" for="type_course">Course</label>
-                </div>
-                <div class="form-check">
                   <input class="form-check-input" type="radio" name="owner_type" value="event" id="type_event">
                   <label class="form-check-label" for="type_event">Event</label>
                 </div>
               </div>
-            </div>
-
-            <div class="col-12 owner-select owner-course" style="display:none;">
-              <label class="form-label">Select Course</label>
-              <select class="form-select" name="owner_id_course" id="ownerCourse">
-                <option value="">Choose course…</option>
-                @foreach ($courses as $c)
-                  <option value="{{ $c->id }}">{{ $c->title }}</option>
-                @endforeach
-              </select>
             </div>
 
             <div class="col-12 owner-select owner-event" style="display:none;">
@@ -325,7 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
     slug: document.getElementById('pageSlug'),
     status: document.getElementById('pageStatus'),
     showOnEvents: document.getElementById('showOnEvents'),
-    ownerCourse: document.getElementById('ownerCourse'),
     ownerEvent: document.getElementById('ownerEvent'),
     metaTitle: document.getElementById('metaTitle'),
     metaDescription: document.getElementById('metaDescription'),
@@ -390,7 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setOwnerRequired(which) {
-    if (elements.ownerCourse) elements.ownerCourse.required = (which === 'course');
     if (elements.ownerEvent) elements.ownerEvent.required = (which === 'event');
   }
 
@@ -447,15 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show/hide and populate owner selects
     form.querySelectorAll('.owner-select').forEach(el => el.style.display = 'none');
     
-    if (ownerType === 'course') {
-      const courseSelect = form.querySelector('.owner-course');
-      if (courseSelect) {
-        courseSelect.style.display = 'block';
-        if (elements.ownerCourse) {
-          elements.ownerCourse.value = String(data.owner_id || '');
-        }
-      }
-    } else if (ownerType === 'event') {
+    if (ownerType === 'event') {
       const eventSelect = form.querySelector('.owner-event');
       if (eventSelect) {
         eventSelect.style.display = 'block';
@@ -475,9 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     form.querySelectorAll('.owner-select').forEach(el => el.style.display = 'none');
     
-    if (val === 'course') {
-      form.querySelector('.owner-course')?.style.setProperty('display', 'block');
-    } else if (val === 'event') {
+    if (val === 'event') {
       form.querySelector('.owner-event')?.style.setProperty('display', 'block');
     }
     
@@ -559,9 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hidden.type = 'hidden';
     hidden.name = 'owner_id';
 
-    if (ownerType === 'course') {
-      hidden.value = elements.ownerCourse?.value || '';
-    } else if (ownerType === 'event') {
+    if (ownerType === 'event') {
       hidden.value = elements.ownerEvent?.value || '';
     } else {
       hidden.value = '';

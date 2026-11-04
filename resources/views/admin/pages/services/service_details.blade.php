@@ -6,26 +6,14 @@
 
 @section('main')
     <div class="container py-5">
-        {{-- Responsive Header: Title and Back Button --}}
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-            <h1 class="fw-bold text-dark mb-3 mb-md-0"><i class="bi bi-gear-wide-connected me-2 text-primary"></i> {{ $service->title }}
-                Details</h1>
-            <a href="{{ route('admin.services.index') }}" class="btn btn-outline-secondary rounded-pill px-4  w-sm-auto">
-                <i class="bi bi-arrow-left"></i> Back to Services
-            </a>
-        </div>
-
-        {{-- Responsive Service Header: Info and Add Button --}}
-        <div class="service-header row align-items-center mb-3">
-            <div class="col-12 col-md-9">
-                <h1 class="mb-1">{{ $service->title }}</h1>
-                <p class="text-muted mb-0">Manage the modular content blocks for this service page.</p>
+        <div class="pagetitle">
+            <div>
+                <h1>{{ $service->title }}</h1>
+                <p class="fe-title-sub">Content blocks shown on this service page, in order.</p>
             </div>
-            <div class="col-12 col-md-3 text-start text-md-end mt-3 mt-md-0">
-                <button class="btn btn-primary rounded-pill px-4 py-2 shadow-sm  w-sm-auto" data-bs-toggle="modal"
-                    data-bs-target="#addContentModal">
-                    <i class="bi bi-plus-lg me-2"></i> Add Content Block
-                </button>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ route('admin.services.index') }}" class="btn btn-outline-secondary">Back to services</a>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContentModal">Add content block</button>
             </div>
         </div>
 
@@ -43,10 +31,11 @@
                                     <span class="content-type-badge bg-light text-secondary border">
                                         {{ ucfirst($content->type) }}
                                     </span>
+                                    @if ($content->type === 'heading')
                                     <h5 class="mt-1 mb-2 fw-semibold">
-                                        {{-- 💡 FIX: Use asString() for safe display in title/preview --}}
                                         {{ \Illuminate\Support\Str::limit($content->asString(), 80) }}
                                     </h5>
+                                    @endif
 
                                     @if ($content->type === 'image')
                                         <img src="{{ asset('storage/' . $content->content) }}"
@@ -66,8 +55,8 @@
                                         @endphp
                                         @if ($isAssoc)
                                             <div class="border rounded-3 p-3 bg-light">
-                                                <h6 class="mb-1">{{ $feature['heading'] ?? 'Feature' }}</h6>
-                                                <p class="text-muted small mb-0">{{ $feature['paragraph'] ?? '' }}</p>
+                                                <h6 class="mb-1">{{ trim(($feature['number'] ?? '') . ' ' . ($feature['title'] ?? $feature['heading'] ?? 'Untitled feature')) }}</h6>
+                                                <p class="text-muted small mb-0">{{ $feature['description'] ?? $feature['paragraph'] ?? '' }}</p>
                                             </div>
                                         @else
                                             <ul class="list-unstyled small text-muted mb-0">
@@ -77,20 +66,19 @@
                                                 @endforeach
                                             </ul>
                                         @endif
-                                    @else
+                                    @elseif ($content->type !== 'heading')
                                         <p class="text-muted small mb-0">
-                                            {{ \Illuminate\Support\Str::limit($content->asString(), 150) }}</p>
+                                            {{ \Illuminate\Support\Str::limit($content->asString(), 220) }}</p>
                                     @endif
                                 </div>
                             </div>
                             <div class="btn-group mt-2 mt-sm-0 flex-shrink-0 ms-auto">
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" aria-label="Edit block {{ $content->position }}" title="Edit"
                                     data-bs-target="#editContentModal{{ $content->id }}">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <form action="{{ route('admin.services.contents.destroy', [$service->id, $content->id]) }}"
-                                    method="POST" class="d-inline"
-                                    onsubmit="return confirm('Are you sure you want to delete this content block?')">
+                                <form data-confirm="Block {{ $content->position }} will be removed from this service page." data-confirm-title="Delete this content block?" data-confirm-action="Delete" action="{{ route('admin.services.contents.destroy', [$service->id, $content->id]) }}"
+                                    method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger" type="submit">

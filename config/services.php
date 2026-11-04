@@ -35,10 +35,11 @@ return [
         ],
     ],
 
-    'paystack' => [
-        'public' => env('PAYSTACK_PUBLIC_KEY'),
-        'secret' => env('PAYSTACK_SECRET_KEY'),
-        'webhook_url' => env('PAYSTACK_WEBHOOK_URL', '/payment/webhook'),
+
+    // Optional Cloudflare Turnstile for public forms. Leave empty to rely on the honeypot and rate limits.
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret'   => env('TURNSTILE_SECRET_KEY'),
     ],
 
     'mailchimp' => [
@@ -60,15 +61,5 @@ return [
         'id' => env('META_PIXEL_ID'),
     ],
 
-    'google_drive' => [
-        'credentials' => env('GOOGLE_DRIVE_CREDENTIALS', storage_path('app/google/credentials.json')),
-        'token'       => env('GOOGLE_DRIVE_TOKEN', storage_path('app/google/token.json')),
-        'impersonate' => env('GOOGLE_DRIVE_IMPERSONATE'),
-        'notify'      => env('GOOGLE_DRIVE_SEND_NOTIFICATION', true),
-    ],
 
-    'google_workspace' => [
-        'mx_check' => env('GOOGLE_WORKSPACE_MX_CHECK', true),
-        'cache_minutes' => env('GOOGLE_WORKSPACE_MX_CACHE', 10080),
-    ],
 ];

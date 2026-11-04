@@ -93,10 +93,9 @@
                                     class="btn btn-sm btn-outline-info rounded-pill px-3 py-2">
                                     <i class="bi bi-eye"></i> View
                                 </a>
-                                <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST" class="d-inline">
+                                <form data-confirm="“{{ $service->title }}” and all of its content blocks will be permanently removed." data-confirm-title="Delete this service?" data-confirm-action="Delete" action="{{ route('admin.services.destroy', $service->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2"
-                                        onclick="return confirm('Delete this service? All contents will be removed.')">
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2">
                                         <i class="bi bi-trash"></i> Delete
                                     </button>
                                 </form>

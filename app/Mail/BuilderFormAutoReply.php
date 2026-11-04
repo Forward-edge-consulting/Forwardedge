@@ -12,7 +12,8 @@ class BuilderFormAutoReply extends Mailable
 
     public function __construct(
         protected string $subjectLine,
-        protected string $bodyCopy
+        protected string $bodyCopy,
+        protected string $firstName = 'there'
     ) {
     }
 
@@ -25,6 +26,7 @@ class BuilderFormAutoReply extends Mailable
             ->with([
                 'bodyCopy' => $this->bodyCopy,
                 'subjectLine' => $subject,
+                'firstName' => $this->firstName,
             ]);
     }
 }

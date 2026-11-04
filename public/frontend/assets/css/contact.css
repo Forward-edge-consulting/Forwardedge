@@ -1,0 +1,21 @@
+.fe-contact-details { background:var(--tj-color-theme-dark,#123b49); color:#fff; margin-bottom:24px; }
+.fe-contact-page { margin-top:24px; }
+.fe-contact-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:clamp(32px,5vw,80px); align-items:center; }
+.fe-contact-eyebrow { font-size:14px; color:#b5cdd6; margin-bottom:20px; }
+.fe-contact-copy h1,.fe-contact-copy h2 { color:#fff; font-size:clamp(36px,4.4vw,64px); line-height:1.1; letter-spacing:-.03em; margin:0 0 24px; }
+.fe-contact-copy h1 span,.fe-contact-copy h2 span { color:#71c9f0; }
+.fe-contact-intro { color:#c4d6dd; max-width:40ch; font-size:18px; line-height:1.6; margin-bottom:32px; }
+.fe-contact-list { margin:0; }
+.fe-contact-list > div { padding:18px 0; border-top:1px solid rgba(255,255,255,.18); }
+.fe-contact-list dt { color:#b5cdd6; font-size:13px; font-weight:400; margin-bottom:4px; }
+.fe-contact-list dd { margin:0; font-size:clamp(17px,1.6vw,22px); line-height:1.5; overflow-wrap:anywhere; }
+.fe-contact-list address { font-style:normal; margin:0; max-width:32ch; }
+.fe-contact-list a { display:inline-block; padding:6px 0; color:#fff; }
+.fe-contact-list a:hover { color:#71c9f0; text-decoration:underline; }
+.fe-contact-map { height:480px; overflow:hidden; border-radius:12px; background:#e8eff1; }
+.fe-contact-map iframe { display:block; width:100%; height:100%; border:0; }
+.fe-contact-directions { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:52px; padding:16px 0 0; color:#fff; font-size:15px; }
+.fe-contact-directions:hover { color:#71c9f0; }
+.fe-contact-details a:focus-visible { outline:2px solid #71c9f0; outline-offset:5px; }
+@media(max-width:991px) { .fe-contact-grid { grid-template-columns:1fr; gap:32px; } .fe-contact-map { height:360px; } }
+@media(max-width:575px) { .fe-contact-details { padding-block:48px; } .fe-contact-map { height:320px; } .fe-contact-intro { font-size:16px; } }

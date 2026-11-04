@@ -19,6 +19,10 @@ class UpsertMember implements ShouldQueue
 
     public $tries = 3;
 
+    public $timeout = 25;
+
+    public $backoff = 60;
+
     public function __construct(
         protected string $email,
         protected array $mergeFields = [],

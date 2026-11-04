@@ -1,5 +1,5 @@
      <!-- start: Cta Section -->
-     @if (!request()->routeIs('page.show'))
+     @if (!request()->routeIs('page.show', 'consultancy', 'events.*'))
      <section class="tj-cta-section">
          <div class="container">
              <div class="row">
@@ -32,24 +32,12 @@
                      <div class="col-xl-3 col-lg-4 col-md-6">
                          <div class="footer-widget wow fadeInUp" data-wow-delay=".1s">
                              <div class="footer-logo">
-                                 <a href="index.html">
+                                 <a href="{{ route('home') }}">
                                      <img src="{{ asset('frontend/assets/images/logos/logo.png') }}" alt="Logos">
                                  </a>
                              </div>
                              <div class="footer-text">
-                                 <p>Developing personalze our customer journeys to increase satisfaction &
-                                     loyalty of our expansion.
-                                 </p>
-                             </div>
-                             <div class="award-logo-area">
-                                 <div class="award-logo">
-                                     <img src="{{ asset('frontend/assets/images/footer/award-logo-1.webp') }}"
-                                         alt="">
-                                 </div>
-                                 <div class="award-logo">
-                                     <img src="{{ asset('frontend/assets/images/footer/award-logo-2.webp') }}"
-                                         alt="">
-                                 </div>
+                                 <p>Information security consulting and cybersecurity training for growing businesses.</p>
                              </div>
                          </div>
                      </div>
@@ -97,10 +85,8 @@
                              <h5 class="title">Resources</h5>
                              <ul>
                                  <li><a href="{{ route('about') }}">About Us</a></li>
-                                 <li><a href="{{ route('academy') }}">Academy</a></li>
                                  <li><a href="{{ route('services') }}">Services</a></li>
                                  <li><a href="{{ route('events.index') }}">Events</a></li>
-                                 <li><a href="{{ route('shop') }}">Shop</a></li>
                                  <li><a href="{{ route('gallery') }}">Gallery</a></li>
                                  <li><a href="{{ route('blog') }}">Blog</a></li>
                                  <li><a href="{{ route('contact') }}">Contact</a></li>
@@ -124,10 +110,11 @@
                                         data-field-name="email"
                                         data-field-type="email"
                                         data-field-required="1">
-                                    <button type="submit"><i class="tji-plane"></i></button>
+                                    <button type="submit" aria-label="Subscribe"><i class="tji-plane"></i></button>
+                                    <x-turnstile appearance="interaction-only" />
                                     <label for="footer-agree">
-                                        <input id="footer-agree" type="checkbox" required>
-                                        Agree to our <a href="{{ route('terms') }}">Terms & Conditions</a>?
+                                        <input id="footer-agree" type="checkbox" name="consent" value="1" required data-consent="I agree to receive emails from Forward Edge and accept the Privacy Policy.">
+                                        <span>I agree to receive emails from Forward Edge and accept the <a href="{{ route('privacy') }}">Privacy Policy</a>.</span>
                                     </label>
                                     <div class="dynamic-form-feedback" role="status" aria-live="polite"></div>
                                 </form>
@@ -145,13 +132,13 @@
                              <div class="footer-contact">
                                  <ul>
                                      <li>
-                                         <a href="tel:10095447818">
+                                         <a href="tel:{{ config('contact.phone_link') }}">
                                              <span class="icon"><i class="tji-phone-2"></i></span>
                                              <span class="text">+234 703 995 5591</span>
                                          </a>
                                      </li>
                                      <li>
-                                         <a href="mailto:info@bexon.com">
+                                         <a href="mailto:{{ config('contact.email') }}">
                                              <span class="icon"><i class="tji-envelop-2"></i></span>
                                              <span class="text">info@forwardedgeconsulting.com</span>
                                          </a>
@@ -184,9 +171,7 @@
                                  </ul>
                              </div>
                              <div class="copyright-text">
-                                 <p>&copy; 2025 <a href="https://themeforest.net/user/theme-junction/portfolio"
-                                         target="_blank">ForwardEdge</a>
-                                     All right reserved</p>
+                                 <p>&copy; {{ date('Y') }} Forward Edge Consulting. All rights reserved.</p>
                              </div>
                          </div>
                      </div>

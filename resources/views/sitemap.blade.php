@@ -11,24 +11,15 @@
     {{-- Static pages --}}
     @foreach ([
         ['route' => 'about',   'freq' => 'monthly', 'priority' => '0.7'],
+        ['route' => 'consultancy', 'freq' => 'monthly', 'priority' => '0.8'],
         ['route' => 'contact', 'freq' => 'monthly', 'priority' => '0.6'],
-        ['route' => 'academy', 'freq' => 'weekly',  'priority' => '0.8'],
+        ['route' => 'events.index', 'freq' => 'weekly', 'priority' => '0.8'],
         ['route' => 'gallery', 'freq' => 'weekly',  'priority' => '0.6'],
     ] as $page)
     <url>
         <loc>{{ route($page['route']) }}</loc>
         <changefreq>{{ $page['freq'] }}</changefreq>
         <priority>{{ $page['priority'] }}</priority>
-    </url>
-    @endforeach
-
-    {{-- Courses --}}
-    @foreach ($courses as $course)
-    <url>
-        <loc>{{ route('course.show', $course->slug) }}</loc>
-        <lastmod>{{ $course->updated_at->toAtomString() }}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
     </url>
     @endforeach
 

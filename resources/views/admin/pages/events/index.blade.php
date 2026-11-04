@@ -1,100 +1,108 @@
 @extends('admin.master_page')
-
-@section('title', 'Events List')
+@section('title', 'Events | Forward Edge')
 
 @section('main')
-<div class="container py-4">
+<div class="fe-page">
     <div class="pagetitle">
-        <div class="pagetitle-left">
-            <div class="pagetitle-icon"><i class="bi bi-calendar-event"></i></div>
-            <div>
-                <h1>Events</h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Events</li>
-                    </ol>
-                </nav>
-            </div>
+        <div>
+            <h1>Events</h1>
+            <p class="fe-title-sub">Programmes, workshops and gatherings. Each one can have its own page that tells the story.</p>
         </div>
-        <a href="{{ route('admin.events.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus me-1"></i> Create Event
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.event-categories.index') }}" class="btn btn-outline-secondary">Categories</a>
+            <a href="{{ route('admin.events.create') }}" class="btn btn-primary">New event</a>
+        </div>
     </div>
 
+    <form method="GET" class="fe-filters" role="search">
+        <div>
+            <label class="form-label" for="ev-when">When</label>
+            <select id="ev-when" name="when" class="form-select form-select-sm">
+                <option value="">All</option>
+                <option value="upcoming" @selected($when === 'upcoming')>Upcoming</option>
+                <option value="past" @selected($when === 'past')>Past</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label" for="ev-cat">Category</label>
+            <select id="ev-cat" name="category" class="form-select form-select-sm">
+                <option value="">All categories</option>
+                @foreach ($categories as $c)<option value="{{ $c->id }}" @selected((int) request('category') === $c->id)>{{ $c->name }}</option>@endforeach
+            </select>
+        </div>
+        <div>
+            <label class="form-label" for="ev-status">Status</label>
+            <select id="ev-status" name="status" class="form-select form-select-sm">
+                <option value="">Any</option>
+                @foreach (['draft' => 'Draft', 'published' => 'Published', 'cancelled' => 'Cancelled'] as $k => $v)
+                    <option value="{{ $k }}" @selected(request('status') === $k)>{{ $v }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="fe-filters-actions">
+            <button class="btn btn-sm btn-outline-secondary">Apply</button>
+            @if (request()->hasAny(['when', 'category', 'status']))<a href="{{ route('admin.events.list') }}" class="btn btn-sm btn-ghost">Reset</a>@endif
+        </div>
+    </form>
 
-
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card">
         <div class="card-body p-0">
             <table class="table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th scope="col" class="py-3 px-4">#</th>
-                        <th scope="col" class="py-3 px-4">Event</th>
-                        <th scope="col" class="py-3 px-4">Status</th>
-                        <th scope="col" class="py-3 px-4">Start</th>
-                        <th scope="col" class="py-3 px-4">End</th>
-                        <th scope="col" class="py-3 px-4">Type</th>
-                        <th scope="col" class="py-3 px-4 text-center">Actions</th>
+                        <th scope="col">Event</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Page</th>
+                        <th scope="col" class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($events as $index=>$event)
-                        <tr class="table-row-hover">
-                            <td class="fw-semibold py-4 px-4">{{ $index + 1 }}</td>
-                            <td class="py-4 px-4">
-                                <div>
-                                    <span class="fw-bold fs-6">{{ $event->title }}</span><br>
-                                    <small class="text-muted">#{{ $event->slug ?? 'no-slug' }}</small>
+                    @forelse ($events as $event)
+                        @php $page = $event->pages->sortByDesc('id')->first(); @endphp
+                        <tr>
+                            <td>
+                                <a href="{{ route('admin.events.dashboard', $event) }}">{{ $event->title }}</a>
+                                <div class="fe-item-s">{{ $event->location }}</div>
+                            </td>
+                            <td>{{ $event->category_label }}</td>
+                            <td class="fe-num text-nowrap">
+                                {{ $event->start_date?->format('j M Y') }}
+                                @if ($event->is_past)<span class="fe-item-s d-block">Past</span>@endif
+                            </td>
+                            <td>
+                                @if ($event->status === 'published')<span class="badge bg-success">Published</span>
+                                @elseif ($event->status === 'cancelled')<span class="badge bg-danger">Cancelled</span>
+                                @else<span class="badge bg-warning">Draft</span>@endif
+                            </td>
+                            <td>
+                                @if ($page)
+                                    <a href="{{ route('pb.blocks', $page) }}">{{ $page->status === 'published' ? 'Live' : 'Draft' }}, edit</a>
+                                @else
+                                    <a href="{{ route('admin.events.dashboard', $event) }}#page" class="text-muted">Not built yet</a>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-1">
+                                    <a href="{{ route('admin.events.dashboard', $event) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <form method="POST" action="{{ route('admin.events.destroy', $event) }}"
+                                          data-confirm="“{{ Str::limit($event->title, 80) }}” will be deleted.{{ $page ? ' Its page is kept as a draft.' : '' }}"
+                                          data-confirm-title="Delete this event?" data-confirm-action="Delete event">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
                                 </div>
-                            </td>
-                            <td class="py-4 px-4">
-                                <span class="badge rounded-pill bg-{{ $event->status == 'published' ? 'success' : 'secondary' }} px-3 py-2">
-                                    {{ ucfirst($event->status) }}
-                                </span>
-                            </td>
-                            <td class="py-4 px-4">
-                                <i class="bi bi-calendar-event text-primary me-1"></i>
-                                {{ optional($event->start_date)->format('M d, Y') ?? 'TBA' }}
-                            </td>
-                            <td class="py-4 px-4">
-                                <i class="bi bi-calendar-check text-success me-1"></i>
-                                {{ optional($event->end_date)->format('M d, Y') ?? 'TBA' }}
-                            </td>
-                            <td class="py-4 px-4">
-                                <span class="badge bg-light text-dark border px-3 py-2">
-                                    {{ ucfirst($event->type) }}
-                                </span>
-                            </td>
-                            <td class="py-4 px-4 text-center">
-                                <a href="{{ route('admin.events.dashboard', $event->id) }}" 
-                                   class="btn btn-sm btn-outline-info rounded-pill px-3 py-2 me-2">
-                                   <i class="bi bi-eye"></i> View
-                                </a>
-                                <form action="{{ route('admin.events.destroy', $event->id) }}" 
-                                      method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2" 
-                                            onclick="return confirm('Delete this event?')">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form>
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-5 text-muted fs-5">🚀 No events yet.</td>
-                        </tr>
+                        <tr><td colspan="6" class="py-5"><p class="fe-empty mb-0">
+                            @if (request()->hasAny(['when', 'category', 'status'])) No events match these filters. @else No events yet. Press New event to add your first one. @endif
+                        </p></td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-
-
-
-
-
 @endsection

@@ -13,14 +13,12 @@ return [
             'ethical hacking bootcamp',
             'blue team vs red team',
             'governance risk compliance services',
-            'digital forensics course',
             'how to start a cybersecurity career',
             'top cybersecurity certifications for beginners',
             'SOC analyst training',
             'cloud security consulting',
             'vulnerability management services',
             'penetration testing workshop',
-            'cybersecurity scholarship nigeria',
             'cybersecurity interview questions',
             'incident response best practices',
             'secure software development training',
@@ -40,16 +38,13 @@ return [
             'title'       => 'About Forward Edge Consulting | Driving Africa’s Cyber Talent',
             'description' => 'Meet the cybersecurity leaders, instructors, and strategists empowering businesses and talent across Africa.',
         ],
+        'consultancy' => [
+            'title' => 'Information Security Consulting | Forward Edge Consulting',
+            'description' => 'Speak with Moyosore Kukoyi (CyberMo) about practical information security guidance for your organisation. Request a free discovery call.',
+        ],
         'contact' => [
             'title'       => 'Contact Forward Edge Consulting',
             'description' => 'Talk to our advisory team about cybersecurity training, events, partnerships, or enterprise consulting support.',
-        ],
-        'academy' => [
-            'title'       => 'Forward Edge Academy | Cybersecurity Learning Paths',
-            'description' => 'Browse immersive cybersecurity programs covering blue team, red team, governance, risk & compliance, and leadership training.',
-        ],
-        'course.show' => [
-            'description' => 'Deep dive into curriculum, schedules, and tuition details for our industry-aligned cybersecurity courses.',
         ],
         'services' => [
             'title'       => 'Cybersecurity Services | Forward Edge Consulting',
@@ -81,23 +76,6 @@ return [
         'gallery' => [
             'title'       => 'Forward Edge Consulting Gallery',
             'description' => 'Highlights from cybersecurity bootcamps, corporate trainings, and community programs.',
-        ],
-        'scholarships' => [
-            'title'       => 'Forward Edge Scholarships',
-            'description' => 'Apply for fully-funded cybersecurity cohorts designed to unlock tech careers.',
-        ],
-        'scholarships.apply' => [
-            'description' => 'Submit your application to join this free cybersecurity cohort with Forward Edge Consulting.',
-        ],
-        'scholarships.apply.course' => [
-            'description' => 'Tell us why you’re a fit for this scholarship-enabled course specialization.',
-        ],
-        'shop' => [
-            'title'       => 'Course Shop | Forward Edge Consulting',
-            'description' => 'Purchase cybersecurity micro-courses, masterclasses, and training bundles.',
-        ],
-        'shop.details' => [
-            'description' => 'Learn what is included in this digital course bundle and enroll instantly.',
         ],
         'page.show' => [
             'description' => 'Explore curated resources, landing pages, and campaign experiences from Forward Edge Consulting.',

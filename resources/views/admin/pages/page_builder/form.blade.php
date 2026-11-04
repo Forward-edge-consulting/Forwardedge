@@ -3,12 +3,31 @@
 
 @section('main')
     <div class="container py-5">
-        <h3 class="mb-4">{{ $page->exists ? 'Edit Page' : 'Create Page' }}</h3>
+        <div class="pagetitle">
+            <h1>{{ $page->exists ? 'Page settings' : 'Create page' }}</h1>
+            <a href="{{ route('pb.pages') }}" class="btn btn-outline-secondary">Back to pages</a>
+        </div>
 
         <div class="image-box p-4">
-            <form method="post" action="{{ $page->exists ? route('pb.pages.update', $page) : route('pb.pages.store') }}">
+            <form data-unsaved enctype="multipart/form-data" method="post" action="{{ $page->exists ? route('pb.pages.update', $page) : route('pb.pages.store') }}">
                 @csrf @if ($page->exists)
                     @method('PUT')
+                @endif
+
+                @if (!$page->exists && !empty($templates))
+                    <div class="mb-4">
+                        <span class="form-label d-block">Start from</span>
+                        <div class="pb-templates" role="radiogroup" aria-label="Page template">
+                            @foreach ($templates as $key => $tpl)
+                                <label class="pb-template">
+                                    <input type="radio" name="template" value="{{ $key }}" @checked(old('template', 'blank') === $key)>
+                                    <strong>{{ $tpl['name'] }}</strong>
+                                    <span>{{ $tpl['description'] }}</span>
+                                    <small>{{ $tpl['for'] }}</small>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
 
                 <div class="row g-3">
@@ -32,8 +51,8 @@
 
                     {{-- ===== Owner binding ===== --}}
                     @php
-                        $ownerType = old('owner_type', $prefill_owner_type ?? null);
-                        $ownerId = old('owner_id', $prefill_owner_id ?? null);
+                        $ownerType = old('owner_type', $page->pageable_type === \App\Models\Event::class ? 'event' : null);
+                        $ownerId = old('owner_id', $page->pageable_id);
                     @endphp
                     <div class="col-12">
                         <label class="form-label">Bind To</label>
@@ -44,29 +63,11 @@
                                 <span class="form-check-label">Standalone Page</span>
                             </label>
                             <label class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="owner_type" value="course"
-                                    {{ $ownerType === 'course' ? 'checked' : '' }}>
-                                <span class="form-check-label">Course</span>
-                            </label>
-                            <label class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="owner_type" value="event"
                                     {{ $ownerType === 'event' ? 'checked' : '' }}>
                                 <span class="form-check-label">Event</span>
                             </label>
                         </div>
-                    </div>
-
-                    <div class="col-md-6 owner-select owner-course"
-                        style="display: {{ $ownerType === 'course' ? 'block' : 'none' }};">
-                        <label class="form-label">Select Course</label>
-                        <select class="form-select" name="owner_id" {{ $ownerType === 'course' ? 'required' : '' }}>
-                            <option value="">Choose course…</option>
-                            @foreach ($courses ?? [] as $c)
-                                <option value="{{ $c->id }}" @selected($ownerType === 'course' && $ownerId == $c->id)>{{ $c->title }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="form-text">A page will be attached to this course.</div>
                     </div>
 
                     <div class="col-md-6 owner-select owner-event"
@@ -86,14 +87,11 @@
                 </div>
 
                 <div class="mt-4 d-flex gap-2">
-                    <button class="tj-primary-btn">
-                        <span class="btn-text"><span>Save</span></span>
-                        <span class="btn-icon"><i class="tji-arrow-right-long"></i></span>
-                    </button>
+                    <button type="submit" class="btn btn-primary">Save page</button>
                     @if ($page->exists)
-                        <a href="{{ route('pb.blocks', $page) }}" class="btn btn-outline-secondary">Manage Blocks</a>
-                        <a href="{{ route('page.show', $page->slug) }}" class="btn btn-outline-dark"
-                            target="_blank">Preview</a>
+                        <a href="{{ route('pb.blocks', $page) }}" class="btn btn-outline-secondary">Edit blocks</a>
+                        <a href="{{ route('page.show', $page->slug) }}" class="btn btn-outline-secondary"
+                            target="_blank" rel="noopener">Preview</a>
                     @endif
                 </div>
             </form>
@@ -108,10 +106,6 @@
             document.querySelectorAll('.owner-select').forEach(el => el.style.display = 'none');
             const ownerId = document.querySelector('select[name="owner_id"]');
             if (ownerId) ownerId.required = false;
-            if (val === 'course') {
-                document.querySelector('.owner-course')?.style.setProperty('display', 'block');
-                if (ownerId) ownerId.required = true;
-            }
             if (val === 'event') {
                 document.querySelector('.owner-event')?.style.setProperty('display', 'block');
                 if (ownerId) ownerId.required = true;

@@ -55,8 +55,4 @@ class EventRegistration extends Model
     {
         return $this->first_name . ' ' . $this->last_name;
     }
-    public function payments()
-    {
-        return $this->morphMany(Payment::class, 'payable');
-    }
 }

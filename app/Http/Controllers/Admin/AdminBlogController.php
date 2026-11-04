@@ -5,112 +5,166 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\BlogDetail;
-use App\Models\User;
+use App\Models\Form;
+use App\Support\RichText;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AdminBlogController extends Controller
 {
+    public const BLOCK_TYPES = ['paragraph', 'heading', 'quote', 'list', 'image', 'video', 'button', 'form'];
+
     public function index()
     {
-        $blogs = Blog::with('author')->latest()->get();
+        $blogs = Blog::with('author')->withCount('details')->latest()->get();
+
         return view('admin.pages.blog.index', compact('blogs'));
     }
 
-    public function create()
-    {
-        return view('admin.pages.blog.create');
-    }
-
+    /** "New post" opens the editor straight away on an empty draft. */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'category' => 'nullable|string|max:100',
-            'thumbnail' => 'nullable|image|max:4096',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:300',
+        $blog = Blog::create([
+            'title' => 'Untitled post',
+            'slug' => $this->uniqueSlug('untitled-post'),
+            'author_id' => Auth::id(),
+            'is_published' => false,
+            'signup_form_id' => Form::system('newsletter')->id,
+            'signup_position' => 'end',
         ]);
 
-        try {
-            DB::beginTransaction();
-
-            // Generate unique slug
-            $slugBase = Str::slug($validated['title']);
-            $slug = $slugBase;
-            $counter = 1;
-            while (Blog::where('slug', $slug)->exists()) {
-                $slug = $slugBase . '-' . $counter++;
-            }
-
-            // Handle thumbnail
-            $thumbnailPath = null;
-            if ($request->hasFile('thumbnail')) {
-                $thumbnailPath = $request->file('thumbnail')->store('blogs/thumbnails', 'public');
-            }
-
-            // Create blog
-            $blog = Blog::create([
-                'title' => $validated['title'],
-                'slug' => $slug,
-                'category' => $validated['category'] ?? null,
-                'thumbnail' => $thumbnailPath,
-                'author_id' => Auth::id(),
-                'meta_title' => $validated['meta_title'] ?? null,
-                'meta_description' => $validated['meta_description'] ?? null,
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('admin.blogs.index')
-                ->with('success', 'Blog post created successfully!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create blog: ' . $e->getMessage());
-        };
-
+        return redirect()->route('admin.blogs.show', $blog->id);
     }
-
 
     public function show($id)
     {
-        $blog = Blog::with(['details' => function ($query) {
-            $query->orderBy('order');
-        }, 'author'])->findOrFail($id);
+        $blog = Blog::with(['details', 'author'])->findOrFail($id);
 
-        return view('admin.pages.blog.view', compact('blog'));
+        $forms = Form::orderByDesc('is_system')->orderBy('name')
+            ->get(['id', 'name', 'slug', 'is_system'])
+            ->filter(fn ($f) => $f->slug !== 'page-forms')->values();
+
+        $categories = Blog::whereNotNull('category')->where('category', '!=', '')->distinct()->orderBy('category')->pluck('category');
+
+        return view('admin.pages.blog.editor', [
+            'blog' => $blog,
+            'blocks' => $blog->details->map(fn (BlogDetail $d) => $this->toClient($d))->values(),
+            'forms' => $forms,
+            'categories' => $categories,
+        ]);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * One endpoint for autosave, "Save", "Publish" and "Schedule".
+     * Autosave is refused for posts that are live, so half-written edits never reach readers.
+     */
+    public function save(Request $request, $id)
     {
         $blog = Blog::findOrFail($id);
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:blogs,slug,' . $id,
-            'category' => 'nullable|string|max:100',
-            'thumbnail' => 'nullable|image|max:4096',
-            'is_published' => 'nullable|boolean',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:300',
-        ]);
-
-        if ($request->hasFile('thumbnail')) {
-            if ($blog->thumbnail) {
-                Storage::disk('public')->delete($blog->thumbnail);
-            }
-            $validated['thumbnail'] = $request->file('thumbnail')->store('blogs/thumbnails', 'public');
+        if ($request->boolean('autosave') && $blog->isLive()) {
+            return response()->json(['status' => 'error', 'message' => 'This post is live. Use Update to publish your changes.'], 409);
         }
 
-        $validated['is_published'] = $request->has('is_published');
+        $data = $request->validate([
+            'title' => 'required|string|max:180',
+            'slug' => ['nullable', 'string', 'max:190'],
+            'category' => 'nullable|string|max:80',
+            'excerpt' => 'nullable|string|max:300',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:300',
+            'signup_form_id' => 'nullable|integer|exists:forms,id',
+            'signup_position' => 'required|in:none,end,after_paragraph',
+            'signup_after' => 'nullable|integer|min:1|max:50',
+            'signup_heading' => 'nullable|string|max:160',
+            'publish' => 'nullable|in:keep,draft,publish,schedule',
+            'published_at' => 'nullable|date',
+            'blocks' => 'present|array|max:300',
+            'blocks.*.id' => 'nullable|integer',
+            'blocks.*.type' => ['required', Rule::in(self::BLOCK_TYPES)],
+            'blocks.*.content' => 'nullable',
+            'blocks.*.extras' => 'nullable|array',
+        ]);
 
-        $blog->update($validated);
+        $action = $data['publish'] ?? 'keep';
+        if ($action === 'schedule' && (empty($data['published_at']) || now()->gte($data['published_at']))) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pick a date and time in the future to schedule this post.',
+                'errors' => ['published_at' => ['Pick a date and time in the future.']],
+            ], 422);
+        }
 
-        return back()->with('success', 'Blog post updated successfully!');
+        DB::transaction(function () use ($blog, $data, $action) {
+            $blog->fill([
+                'title' => trim($data['title']),
+                'category' => $data['category'] ?? null,
+                'excerpt' => $data['excerpt'] ?? null,
+                'meta_title' => $data['meta_title'] ?? null,
+                'meta_description' => $data['meta_description'] ?? null,
+                'signup_form_id' => $data['signup_form_id'] ?? null,
+                'signup_position' => $data['signup_position'],
+                'signup_after' => $data['signup_position'] === 'after_paragraph' ? ($data['signup_after'] ?? 3) : null,
+                'signup_heading' => $data['signup_heading'] ?? null,
+            ]);
+
+            if (filled($data['slug'] ?? null)) {
+                $blog->slug = $this->uniqueSlug($data['slug'], $blog->id);
+            }
+
+            match ($action) {
+                'draft' => $blog->fill(['is_published' => false]),
+                'publish' => $blog->fill([
+                    'is_published' => true,
+                    // keep the original date when updating a live post
+                    'published_at' => $blog->isLive() && $blog->published_at ? $blog->published_at : now(),
+                ]),
+                'schedule' => $blog->fill(['is_published' => true, 'published_at' => $data['published_at']]),
+                default => null,
+            };
+
+            $blog->save();
+            $this->syncBlocks($blog, $data['blocks']);
+        });
+
+        $blog->refresh()->load('details');
+
+        return response()->json([
+            'status' => 'ok',
+            'saved_at' => now()->format('g:ia'),
+            'blog_status' => $blog->status,
+            'slug' => $blog->slug,
+            'published_at' => $blog->published_at?->format('Y-m-d\TH:i'),
+            'public_url' => route('blogs.show', $blog->slug),
+            'blocks' => $blog->details->map(fn (BlogDetail $d) => $this->toClient($d))->values(),
+        ]);
+    }
+
+    /** Images for the post body. */
+    public function upload(Request $request, $id)
+    {
+        Blog::findOrFail($id);
+        $request->validate(['image' => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:5120']);
+        $path = $request->file('image')->store('blogs/content', 'public');
+
+        return response()->json(['path' => $path, 'url' => Storage::url($path)]);
+    }
+
+    public function cover(Request $request, $id)
+    {
+        $blog = Blog::findOrFail($id);
+        $request->validate(['image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120']);
+
+        if ($blog->thumbnail) {
+            Storage::disk('public')->delete($blog->thumbnail);
+        }
+        $blog->update(['thumbnail' => $request->file('image')->store('blogs/thumbnails', 'public')]);
+
+        return response()->json(['url' => Storage::url($blog->thumbnail)]);
     }
 
     public function destroy($id)
@@ -120,12 +174,10 @@ class AdminBlogController extends Controller
         if ($blog->thumbnail) {
             Storage::disk('public')->delete($blog->thumbnail);
         }
-
         foreach ($blog->details as $detail) {
             if ($detail->type === 'image' && $detail->content) {
                 Storage::disk('public')->delete($detail->content);
             }
-
             if ($detail->type === 'video' && $detail->videoIsLocal()) {
                 Storage::disk('public')->delete($detail->rawContent());
             }
@@ -133,230 +185,139 @@ class AdminBlogController extends Controller
 
         $blog->delete();
 
-        return redirect()->route('admin.pages.blog.index')
-            ->with('success', 'Blog post deleted successfully!');
+        return redirect()->route('admin.blogs.index')->with('success', 'Post deleted.');
     }
 
-    public function storeDetail(Request $request, $blogId)
+    // ---------------------------------------------------------------------
+
+    /** Shape one stored block for the editor. */
+    protected function toClient(BlogDetail $d): array
     {
-        $blog = Blog::findOrFail($blogId);
+        $extras = $d->extras ?? [];
+        $content = match ($d->type) {
+            'list' => $d->contentArray(),
+            'paragraph' => $d->isHtml() ? RichText::clean($d->contentString()) : nl2br(e($d->contentString())),
+            'image' => $d->content,
+            default => $d->contentString(),
+        };
 
-        $validatedBlocks = $request->validate([
-            'blocks' => 'required|array|min:1',
-            'blocks.*.type' => 'required|in:heading,paragraph,quote,list,image,video',
-            'blocks.*.content' => 'nullable',
-            'blocks.*.order' => 'nullable|integer|min:1',
-            'blocks.*.video_source' => 'nullable|in:upload,url',
-            'blocks.*.video_url' => 'nullable|url',
-            'blocks.*.video_orientation' => 'nullable|in:landscape,portrait',
-            'blocks.*.video_file' => 'nullable|file|mimes:mp4,mov,avi,wmv,mkv,mpg,mpeg,webm|max:102400',
-        ]);
-
-        DB::transaction(function () use ($validatedBlocks, $blog, $request) {
-            $nextOrder = (int) ($blog->details()->max('order') ?? 0);
-
-            foreach ($validatedBlocks['blocks'] as $index => $block) {
-                $content = $block['content'] ?? null;
-                $type = $block['type'];
-                $extras = [];
-
-                if ($type === 'image') {
-                    if (!$request->hasFile("blocks.$index.content")) {
-                        throw ValidationException::withMessages([
-                            "blocks.$index.content" => 'Please upload an image.',
-                        ]);
-                    }
-                    $content = $request->file("blocks.$index.content")->store('blogs/content', 'public');
-                } elseif ($type === 'list') {
-                    $items = $this->normalizeListItems($block['content'] ?? []);
-                    if (empty($items)) {
-                        throw ValidationException::withMessages([
-                            "blocks.$index.content" => 'Add at least one list item.',
-                        ]);
-                    }
-                    $content = json_encode($items);
-                } elseif ($type === 'video') {
-                    $source = $block['video_source'] ?? ($request->hasFile("blocks.$index.video_file") ? 'upload' : 'url');
-                    $source = in_array($source, ['upload', 'url'], true) ? $source : 'upload';
-                    $orientation = in_array($block['video_orientation'] ?? '', ['portrait', 'landscape'], true)
-                        ? $block['video_orientation']
-                        : 'landscape';
-
-                    $extras = [
-                        'orientation' => $orientation,
-                        'source' => $source,
-                    ];
-
-                    if ($source === 'upload') {
-                        if (!$request->hasFile("blocks.$index.video_file")) {
-                            throw ValidationException::withMessages([
-                                "blocks.$index.video_file" => 'Upload a video file.',
-                            ]);
-                        }
-                        $file = $request->file("blocks.$index.video_file");
-                        $content = $file->store('blogs/videos', 'public');
-                        $extras['mime'] = $file->getMimeType();
-                    } else {
-                        $videoUrl = trim((string) ($block['video_url'] ?? ''));
-                        if (blank($videoUrl)) {
-                            throw ValidationException::withMessages([
-                                "blocks.$index.video_url" => 'Provide a valid video URL.',
-                            ]);
-                        }
-                        $content = $videoUrl;
-                    }
-                } else {
-                    if (!filled($content)) {
-                        throw ValidationException::withMessages([
-                            "blocks.$index.content" => 'This block requires content.',
-                        ]);
-                    }
-                }
-
-                $orderValue = isset($block['order']) ? (int) $block['order'] : ++$nextOrder;
-                if (isset($block['order'])) {
-                    $nextOrder = max($nextOrder, $orderValue);
-                }
-
-                $blog->details()->create([
-                    'type'   => $type,
-                    'content'=> $content,
-                    'order'  => $orderValue,
-                    'extras' => !empty($extras) ? $extras : null,
-                ]);
-            }
-        });
-
-        return back()->with('success', 'All content blocks added successfully!');
-    }
-
-
-    public function updateDetail(Request $request, $blogId, $detailId)
-    {
-        $detail = BlogDetail::where('blog_id', $blogId)->findOrFail($detailId);
-
-        $rules = [
-            'extras' => 'nullable|array',
-            'order' => 'nullable|integer|min:1',
+        return [
+            'id' => $d->id,
+            'type' => $d->type,
+            'content' => $content,
+            'extras' => $extras,
+            'url' => $d->type === 'image' ? $d->imageUrl() : null,
         ];
+    }
 
-        if ($detail->type === 'list') {
-            $rules['content'] = 'required|array|min:1';
-        } elseif ($detail->type === 'image') {
-            $rules['content'] = 'nullable';
-        } elseif ($detail->type === 'video') {
-            $rules['content'] = 'nullable';
-            $rules['video_source'] = 'nullable|in:upload,url';
-            $rules['video_url'] = 'nullable|url';
-            $rules['video_file'] = 'nullable|file|mimes:mp4,mov,avi,wmv,mkv,mpg,mpeg,webm|max:102400';
-            $rules['orientation'] = 'nullable|in:landscape,portrait';
-        } else {
-            $rules['content'] = 'required';
-        }
+    /** Create, update and remove rows so the stored blocks match the editor, keeping ids stable. */
+    protected function syncBlocks(Blog $blog, array $blocks): void
+    {
+        $existing = $blog->details()->get()->keyBy('id');
+        $kept = [];
+        $order = 0;
 
-        $validated = $request->validate($rules);
-
-        $contentData = $validated['content'] ?? $detail->content;
-        $extrasPayload = $validated['extras'] ?? $detail->extras ?? [];
-
-        // Handle image uploads
-        if ($detail->type === 'image' && $request->hasFile('content')) {
-            if (is_string($detail->content)) {
-                Storage::disk('public')->delete($detail->content);
+        foreach ($blocks as $block) {
+            $normalized = $this->normalizeBlock($block, $existing->get($block['id'] ?? 0));
+            if ($normalized === null) {
+                continue; // empty blocks are dropped
             }
-            $contentData = $request->file('content')->store('blogs/content', 'public');
-        }
 
-        // Handle lists
-        if ($detail->type === 'list') {
-            $contentData = json_encode($this->normalizeListItems($contentData));
-        }
-        if ($detail->type === 'video') {
-            $source = $validated['video_source'] ?? ($detail->extras['source'] ?? ($detail->videoIsLocal() ? 'upload' : 'url'));
-            $source = in_array($source, ['upload', 'url'], true) ? $source : 'upload';
-            $orientation = $validated['orientation'] ?? ($detail->extras['orientation'] ?? 'landscape');
-            $extrasPayload['orientation'] = $orientation;
-            $extrasPayload['source'] = $source;
+            $payload = $normalized + ['order' => ++$order];
+            $row = isset($block['id']) ? $existing->get($block['id']) : null;
 
-            if ($source === 'upload') {
-                if ($request->hasFile('video_file')) {
-                    if ($detail->videoIsLocal()) {
-                        Storage::disk('public')->delete($detail->rawContent());
-                    }
-                    $file = $request->file('video_file');
-                    $contentData = $file->store('blogs/videos', 'public');
-                    $extrasPayload['mime'] = $file->getMimeType();
-                } elseif (!$detail->videoIsLocal()) {
-                    throw ValidationException::withMessages([
-                        'video_file' => 'Upload a video file or switch to URL.',
-                    ]);
-                } else {
-                    $contentData = $detail->rawContent();
-                }
+            if ($row) {
+                $row->update($payload);
+                $kept[] = $row->id;
             } else {
-                $url = trim((string) ($validated['video_url'] ?? ''));
-                if (blank($url) && $detail->videoIsExternal()) {
-                    $url = $detail->rawContent();
-                }
-
-                if (blank($url)) {
-                    throw ValidationException::withMessages([
-                        'video_url' => 'Provide a valid video URL.',
-                    ]);
-                }
-
-                if ($detail->videoIsLocal()) {
-                    Storage::disk('public')->delete($detail->rawContent());
-                }
-
-                $contentData = $url;
+                $kept[] = $blog->details()->create($payload)->id;
             }
         }
 
-        $detail->update([
-            'content' => $contentData,
-            'extras' => $extrasPayload,
-            'order' => $validated['order'] ?? $detail->order,
-        ]);
-
-        return back()->with('success', 'Content updated successfully!');
+        foreach ($existing as $id => $row) {
+            if (!in_array($id, $kept, true)) {
+                if ($row->type === 'image' && $row->content) {
+                    Storage::disk('public')->delete($row->content);
+                }
+                $row->delete();
+            }
+        }
     }
 
-    public function destroyDetail($blogId, $detailId)
+    protected function normalizeBlock(array $block, ?BlogDetail $current): ?array
     {
-        $detail = BlogDetail::where('blog_id', $blogId)->findOrFail($detailId);
+        $type = $block['type'];
+        $content = $block['content'] ?? null;
+        $extras = is_array($block['extras'] ?? null) ? $block['extras'] : [];
 
-        if ($detail->type === 'image' && is_string($detail->content)) {
-            Storage::disk('public')->delete($detail->content);
+        switch ($type) {
+            case 'paragraph':
+                $html = RichText::clean(is_string($content) ? $content : '');
+                return $html === '' ? null : ['type' => $type, 'content' => $html, 'extras' => ['format' => 'html']];
+
+            case 'heading':
+                $text = trim(RichText::toText(is_string($content) ? $content : ''));
+                return $text === '' ? null : ['type' => $type, 'content' => Str::limit($text, 200, ''), 'extras' => null];
+
+            case 'quote':
+                $text = trim(RichText::toText(is_string($content) ? $content : ''));
+                $author = trim(strip_tags((string) ($extras['author'] ?? '')));
+                return $text === '' ? null : ['type' => $type, 'content' => $text, 'extras' => $author !== '' ? ['author' => Str::limit($author, 120, '')] : null];
+
+            case 'list':
+                $items = collect(is_array($content) ? $content : preg_split('/\R/', (string) $content))
+                    ->map(fn ($i) => trim(RichText::toText((string) $i)))->filter()->values()->all();
+                return $items ? ['type' => $type, 'content' => json_encode($items), 'extras' => null] : null;
+
+            case 'image':
+                $path = is_string($content) ? ltrim($content, '/') : '';
+                if ($path === '' || str_contains($path, '..') || !str_starts_with($path, 'blogs/')) {
+                    return null;
+                }
+                $out = array_filter([
+                    'caption' => Str::limit(trim(strip_tags((string) ($extras['caption'] ?? ''))), 200, ''),
+                    'alt' => Str::limit(trim(strip_tags((string) ($extras['alt'] ?? ''))), 200, ''),
+                ]);
+                return ['type' => $type, 'content' => $path, 'extras' => $out ?: null];
+
+            case 'video':
+                // Uploaded videos from older posts stay as they are; new ones are links.
+                if ($current && $current->type === 'video' && $current->videoIsLocal() && ($extras['source'] ?? '') === 'upload') {
+                    return ['type' => $type, 'content' => $current->rawContent(), 'extras' => $current->extras];
+                }
+                $url = trim((string) $content);
+                if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $url)) {
+                    return null;
+                }
+                $orientation = ($extras['orientation'] ?? '') === 'portrait' ? 'portrait' : 'landscape';
+                return ['type' => $type, 'content' => $url, 'extras' => ['source' => 'url', 'orientation' => $orientation]];
+
+            case 'button':
+                $label = trim(strip_tags((string) $content));
+                $url = RichText::safeUrl($extras['url'] ?? '');
+                return ($label === '' || $url === null) ? null : ['type' => $type, 'content' => Str::limit($label, 80, ''), 'extras' => ['url' => $url]];
+
+            case 'form':
+                $formId = (int) ($extras['form_id'] ?? 0);
+                if (!$formId || !Form::whereKey($formId)->exists()) {
+                    return null;
+                }
+                $heading = trim(strip_tags((string) ($extras['heading'] ?? '')));
+                return ['type' => $type, 'content' => null, 'extras' => array_filter(['form_id' => $formId, 'heading' => Str::limit($heading, 160, '')])];
         }
 
-        if ($detail->type === 'video' && $detail->videoIsLocal()) {
-            Storage::disk('public')->delete($detail->rawContent());
-        }
-
-        $detail->delete();
-
-        return back()->with('success', 'Content deleted successfully!');
+        return null;
     }
 
-    private function normalizeListItems(mixed $value): array
+    protected function uniqueSlug(string $value, ?int $ignoreId = null): string
     {
-        if (is_array($value)) {
-            return collect($value)
-                ->map(fn($item) => trim((string) $item))
-                ->filter()
-                ->values()
-                ->all();
+        $base = Str::slug($value) ?: 'post';
+        $slug = $base;
+        $i = 2;
+        while (Blog::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = $base . '-' . $i++;
         }
 
-        if (is_string($value)) {
-            return collect(preg_split("/\r\n|\r|\n/", $value))
-                ->map(fn($item) => trim((string) $item))
-                ->filter()
-                ->values()
-                ->all();
-        }
-
-        return [];
+        return $slug;
     }
 }

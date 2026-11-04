@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
-use App\Models\Course;
 use App\Models\Event;
 use App\Models\Faq;
 use App\Models\Service;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 
 class WelcomeController extends Controller
 {
@@ -29,15 +27,15 @@ class WelcomeController extends Controller
     private function homeResourceCards(): Collection
     {
         $blogs = Blog::with(['author'])
-            ->where('is_published', true)
-            ->latest()
+            ->published()
+            ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->take(6)
             ->get()
             ->map(fn (Blog $blog) => [
                 'type' => 'blog',
                 'img' => $blog->thumbnail
                     ? asset('storage/' . $blog->thumbnail)
-                    : asset('frontend/assets/images/blog/default.webp'),
+                    : asset('frontend/assets/images/blog/blog-1.webp'),
                 'date' => optional($blog->created_at)->format('d'),
                 'month' => optional($blog->created_at)->format('M'),
                 'badge' => 'Blog',
@@ -75,34 +73,7 @@ class WelcomeController extends Controller
                 ];
             });
 
-        $bootcamps = Course::query()
-            ->where('status', 'published')
-            ->with(['pages' => fn ($q) => $q->where('status', 'published')->latest('updated_at')])
-            ->latest()
-            ->take(6)
-            ->get()
-            ->map(function (Course $course) {
-                $page = $course->pages->first();
-                $thumb = (!empty($course->thumbnail) && Storage::disk('public')->exists($course->thumbnail))
-                    ? asset('storage/' . $course->thumbnail)
-                    : asset('frontend/assets/images/service/service-1.webp');
-
-                return [
-                    'type' => 'schedule',
-                    'img' => $thumb,
-                    'date' => optional($course->created_at)->format('d'),
-                    'month' => optional($course->created_at)->format('M'),
-                    'badge' => 'Bootcamp',
-                    'meta_right' => 'Online',
-                    'title' => $course->title ?? 'Bootcamp',
-                    'url' => $page ? route('page.show', $page->slug) : route('shop.details', $course->slug),
-                    'cta' => 'View Details',
-                ];
-            })
-            ->filter()
-            ->values();
-
-        return $this->takeBalancedTopSix([$events, $blogs, $bootcamps]);
+        return $this->takeBalancedTopSix([$events, $blogs]);
     }
 
     private function visibleEventPageQuery($query)
