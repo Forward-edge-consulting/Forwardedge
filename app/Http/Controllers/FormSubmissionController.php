@@ -96,9 +96,15 @@ class FormSubmissionController extends Controller
                     'errors' => ['answers.' . $slotField['key'] => ['That time is no longer available. Please choose another.']],
                     'refresh_slots' => true,
                 ]);
+            } catch (\Throwable $e) {
+                return $this->failed($request, $e, $form, $email);
             }
         } else {
-            $submission = $responses->store($form, $rows, $email, $name, $request, $consent);
+            try {
+                $submission = $responses->store($form, $rows, $email, $name, $request, $consent);
+            } catch (\Throwable $e) {
+                return $this->failed($request, $e, $form, $email);
+            }
         }
 
         $redirect = (string) $form->setting('redirect_url');
@@ -113,6 +119,19 @@ class FormSubmissionController extends Controller
             'popup' => $responses->popup($form, $submission),
             'booking' => $booking ? ['when' => $bookings->label($booking->starts_at)] : null,
         ]);
+    }
+
+    /** Log the real cause for us; the visitor only sees a calm message, never SQL or stack details. */
+    protected function failed(Request $request, \Throwable $e, Form $form, ?string $email)
+    {
+        report($e);
+        \Illuminate\Support\Facades\Log::error('Form submission failed', [
+            'form_id' => $form->id,
+            'slug' => $form->slug,
+            'error' => $e->getMessage(),
+        ]);
+
+        return $this->respond($request, 'error', 'Sorry, something went wrong on our side and your request was not saved. Please try again in a few minutes, or email us directly.', 500);
     }
 
     protected function respond(Request $request, string $status, ?string $message, int $code = 200, array $extra = [])
