@@ -146,54 +146,54 @@
                         <div class="swiper-wrapper">
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client1.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client1.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client2.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client2.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client3.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client3.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client4.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client4.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client5.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client5.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client6.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client6.png') }}" alt="">
                                 </div>
                             </div>
                             {{-- <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client7.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client7.jpg') }}" alt="">
                                 </div>
                             </div> --}}
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client8.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client8.jpg') }}" alt="">
                                 </div>
                             </div><div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client9.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client9.jpg') }}" alt="">
                                 </div>
                             </div><div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client10.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client10.png') }}" alt="">
                                 </div>
                             </div><div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client11.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client11.jpg') }}" alt="">
                                 </div>
                             </div>
                         </div>
@@ -212,8 +212,8 @@
                 <div class="col-xl-4 col-lg-6 order-lg-1 order-2">
                     <div class="about-img-area style-2 wow fadeInLeft" data-wow-delay=".3s">
                         <div class="about-img overflow-hidden">
-                            <img data-speed=".8" src="{{ asset('frontend/assets/images/project/picture3.jpg') }}"
-                                alt="">
+                            <img loading="lazy" decoding="async" data-speed=".8" src="{{ asset('frontend/assets/images/about/about-team.jpg') }}"
+                                alt="Forward Edge team in a meeting">
                         </div>
                         <div class="box-area style-2">
                             <div class="progress-box wow fadeInUp" data-wow-delay=".3s">
@@ -292,10 +292,10 @@
             </div>
         </div>
         <div class="bg-shape-1">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
         </div>
         <div class="bg-shape-2">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
         </div>
     </section>
     <!-- end: About Section -->
@@ -309,7 +309,7 @@
                 <div class="col-lg-6 order-lg-2">
                     <div class="testimonial-img-area wow fadeInUp" data-wow-delay=".3s">
                         <div class="testimonial-img">
-                            <img src="{{ asset('frontend/assets/images/testimonial/pic.jpg') }}" alt="">
+                            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/testimonial/pic.jpg') }}" alt="">
                             <div class="sec-heading style-2">
                                 <h2 class="sec-title title-anim">Our <span>Commitment.</span></h2>
                             </div>
@@ -399,10 +399,10 @@
 
         </div>
         <div class="bg-shape-1">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
         </div>
         <div class="bg-shape-2">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
         </div>
     </section>
     <!-- end: Team Section -->

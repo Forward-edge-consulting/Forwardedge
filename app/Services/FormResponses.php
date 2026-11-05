@@ -61,7 +61,7 @@ class FormResponses
 
     public function notify(Form $form, FormSubmission $submission): void
     {
-        $to = trim((string) $form->setting('notify_email', ''));
+        $to = trim((string) ($form->setting('notify_email') ?: config('contact.email')));
         if ($to !== '' && filter_var($to, FILTER_VALIDATE_EMAIL)) {
             try {
                 Mail::to($to)->send(new FormSubmissionNotification($form, $submission));
@@ -70,11 +70,11 @@ class FormResponses
             }
         }
 
-        if ($form->setting('auto_reply', false) && !$form->hasResource() && $submission->email) {
+        if ($form->setting('auto_reply') && !$form->hasResource() && $submission->email) {
             try {
                 Mail::to($submission->email)->send(new BuilderFormAutoReply(
-                    (string) $form->setting('auto_reply_subject'),
-                    (string) $form->setting('auto_reply_body'),
+                    Form::defaultSettings()['auto_reply_subject'],
+                    Form::defaultSettings()['auto_reply_body'],
                     $this->firstName($submission)
                 ));
             } catch (\Throwable $e) {

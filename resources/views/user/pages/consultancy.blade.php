@@ -144,7 +144,7 @@
     <section class="fe-c-section" aria-labelledby="fe-c-why">
         <div class="fe-c-wrap fe-c-split">
             <figure class="fe-c-photo">
-                <img src="{{ asset('frontend/assets/images/hero/consulting-team.jpg') }}" alt="A team in conversation around a meeting-room table" width="1400" height="933" loading="lazy">
+                <img src="{{ asset('frontend/assets/images/hero/handshake-globe.jpg') }}" alt="A business handshake in front of a digital globe" width="736" height="491" loading="lazy">
                 <figcaption>Your business deserves more than guesswork ↗</figcaption>
             </figure>
             <div>

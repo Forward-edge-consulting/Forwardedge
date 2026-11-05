@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Services\Mailchimp;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Schedule as ScheduleFacade;
 use Tests\TestCase;
@@ -33,10 +32,8 @@ class OperationsTest extends TestCase
         $this->assertSame(5, $event->expiresAt);
     }
 
-    public function test_external_mail_services_have_finite_timeouts(): void
+    public function test_smtp_has_a_finite_timeout(): void
     {
-        config(['services.mailchimp.key' => 'test-key', 'services.mailchimp.server_prefix' => 'us1']);
-        $this->assertSame(10, Mailchimp::client()->getTimeout());
         $this->assertGreaterThan(0, config('mail.mailers.smtp.timeout'));
         $this->assertLessThan(30, config('mail.mailers.smtp.timeout'));
     }

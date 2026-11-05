@@ -47,7 +47,7 @@
                     <a class="fe-home-consultancy" href="{{ route('consultancy') }}">Book a consultancy <span aria-hidden="true">↗</span></a>
                 </div>
                 <div class="banner-shape">
-                    <img src="{{ asset('frontend/assets/images/shape/pattern-bg.webp') }}" alt="">
+                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-bg.webp') }}" alt="">
                 </div>
             </div>
             <div class="banner-right-box">
@@ -138,91 +138,91 @@
                         <div class="swiper-wrapper">
                             <div class="swiper-slide client-item">
                                 <div class="clien">
-                                    <img src="{{ asset('frontend/assets/images/brands/download.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download.jpg') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download1.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download1.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download2.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download2.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download3.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download3.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/downloa4.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/downloa4.jpg') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download5.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download5.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download6.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download6.jpg') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download7.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download7.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download8.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download8.jpg') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download9.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download9.png') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download10.png') }}"
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download10.png') }}"
                                         alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/skyhigh11.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/skyhigh11.jpg') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/download12.png') }}"
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/download12.png') }}"
                                         alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client7.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client7.jpg') }}" alt="">
                                 </div>
                             </div><div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client8.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client8.jpg') }}" alt="">
                                 </div>
                             </div><div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client9.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client9.jpg') }}" alt="">
                                 </div>
                             </div>
                             <div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client10.png') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client10.png') }}" alt="">
                                 </div>
                             </div><div class="swiper-slide client-item">
                                 <div class="">
-                                    <img src="{{ asset('frontend/assets/images/brands/client11.jpg') }}" alt="">
+                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/brands/client11.jpg') }}" alt="">
                                 </div>
                             </div>
                         </div>
@@ -299,7 +299,7 @@
                                     <div class="swiper-slide">
                                         <div class="service-item style-1">
                                             <div class="service-img">
-                                                <img src="{{ asset('storage/' . $service->thumbnail) }}"
+                                                <img loading="lazy" decoding="async" src="{{ asset('storage/' . $service->thumbnail) }}"
                                                     alt="{{ $service->title }}">
                                             </div>
                                             <div class="service-icon"> <i class="tji-service-1"></i> </div>
@@ -330,10 +330,10 @@
         </div>
 
         <div class="bg-shape-1">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
         </div>
         <div class="bg-shape-2">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
         </div>
     </section>
     <!-- end: Service Section -->
@@ -536,7 +536,7 @@
                                         <div class="testimonial-author mt-auto">
                                             <div class="author-inner d-flex align-items-center">
                                                 <div class="author-img me-2">
-                                                    <img src="{{ asset('frontend/assets/images/testimonial/client1.jpeg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/testimonial/client1.jpeg') }}"
                                                         alt="Client 1">
                                                 </div>
                                                 <div class="author-header">
@@ -564,7 +564,7 @@
                                         <div class="testimonial-author mt-auto">
                                             <div class="author-inner d-flex align-items-center">
                                                 <div class="author-img me-2">
-                                                    <img src="{{ asset('frontend/assets/images/testimonial/client2.jpeg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/testimonial/client2.jpeg') }}"
                                                         alt="Client 2">
                                                 </div>
                                                 <div class="author-header">
@@ -592,7 +592,7 @@
                                         <div class="testimonial-author mt-auto">
                                             <div class="author-inner d-flex align-items-center">
                                                 <div class="author-img me-2">
-                                                    <img src="{{ asset('frontend/assets/images/testimonial/client3.jpeg') }}"
+                                                    <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/testimonial/client3.jpeg') }}"
                                                         alt="Client 3">
                                                 </div>
                                                 <div class="author-header">
@@ -612,10 +612,10 @@
             </div>
         </div>
         <div class="bg-shape-1">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-2.svg') }}" alt="">
         </div>
         <div class="bg-shape-2">
-            <img src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
+            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/shape/pattern-3.svg') }}" alt="">
         </div>
     </section>
     <!-- end: Testimonial Section -->
@@ -627,7 +627,7 @@
                 <div class="col-lg-6">
                     <div class="faq-img-area tj-arrange-item-2">
                         <div class="faq-img overflow-hidden">
-                            <img src="{{ asset('frontend/assets/images/faq/pic.jpg') }}" alt="">
+                            <img loading="lazy" decoding="async" src="{{ asset('frontend/assets/images/faq/pic.jpg') }}" alt="">
                             <h2 class="title">Need Help? Start Here...</h2>
                         </div>
                         <div class="box-area ">
@@ -758,7 +758,7 @@
                 <div class="blog-item wow fadeInUp" data-wow-delay=".4s">
                     <div class="blog-thumb">
                         <a href="{{ $c['url'] }}">
-                            <img src="{{ $c['img'] }}" alt="{{ $c['title'] }}"
+                            <img loading="lazy" decoding="async" src="{{ $c['img'] }}" alt="{{ $c['title'] }}"
                                  style="height: 250px; width: 100%; object-fit: cover; border-radius: 8px;">
                         </a>
                         @if($c['date'] && $c['month'])

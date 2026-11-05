@@ -1,5 +1,5 @@
 <div class="banner-img fe-hero-photo fe-hero-slideshow" data-hero-slideshow role="region" aria-roledescription="carousel" aria-label="Forward Edge services">
-    <img class="fe-hero-slide is-active" fetchpriority="high" src="{{ asset('frontend/assets/images/hero/consulting-team.jpg') }}" alt="Professionals meeting inside a glass-walled office" data-caption="Consulting & collaboration" style="object-position:28% center">
+    <img class="fe-hero-slide is-active" fetchpriority="high" src="{{ asset('frontend/assets/images/hero/handshake-globe.jpg') }}" alt="A business handshake in front of a digital globe" data-caption="Consulting & collaboration" style="object-position:center">
     <img class="fe-hero-slide" src="{{ asset('frontend/assets/images/hero/bootcamp-community.jpg') }}" alt="Forward Edge cybersecurity bootcamp participants smiling together for a group photograph" aria-hidden="true" data-caption="Our bootcamp community" decoding="async" style="object-position:50% center">
     <img class="fe-hero-slide" src="{{ asset('frontend/assets/images/hero/security-monitoring.jpg') }}" alt="A Black professional reviewing live data across two monitors" aria-hidden="true" data-caption="Security operations" decoding="async" style="object-position:40% center">
     <div class="fe-hero-slide-footer">

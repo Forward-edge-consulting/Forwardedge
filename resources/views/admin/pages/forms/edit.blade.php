@@ -89,6 +89,11 @@
                             <label class="form-label" for="fb-success">Thank-you message</label>
                             <textarea id="fb-success" name="success_message" class="form-control" rows="2" maxlength="300">{{ old('success_message', $s['success_message']) }}</textarea>
                         </div>
+                        <div class="col-md-7">
+                            <label class="form-label" for="fb-redirect">Go to this page afterwards</label>
+                            <input id="fb-redirect" name="redirect_url" class="form-control" value="{{ old('redirect_url', $s['redirect_url']) }}" maxlength="190" placeholder="/thank-you">
+                            <div class="form-text">Optional. A page on this site, starting with /. Leave empty to stay on the page and show the thank-you message. Forms that give a download stay on the page.</div>
+                        </div>
                     </div>
                 </section>
 
@@ -165,22 +170,13 @@
                     <div class="mb-3">
                         <label class="form-label" for="fb-notify">Email me when someone responds</label>
                         <input id="fb-notify" type="email" name="notify_email" class="form-control" value="{{ old('notify_email', $s['notify_email']) }}" placeholder="{{ config('contact.email') }}">
-                        <div class="form-text">Optional. Responses are always saved here first.</div>
+                        <div class="form-text">Leave empty to use {{ config('contact.email') }}. Responses are always saved here first.</div>
                     </div>
                     <div class="form-check mb-3">
                         <input class="form-check-input" type="checkbox" id="fb-reply" name="auto_reply" value="1" @checked(old('auto_reply', $s['auto_reply']))>
                         <label class="form-check-label" for="fb-reply">Send the person a confirmation email</label>
                     </div>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label" for="fb-reply-subject">Subject</label>
-                            <input id="fb-reply-subject" name="auto_reply_subject" class="form-control" value="{{ old('auto_reply_subject', $s['auto_reply_subject']) }}" maxlength="150">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label" for="fb-reply-body">Message</label>
-                            <textarea id="fb-reply-body" name="auto_reply_body" class="form-control" rows="3" maxlength="2000">{{ old('auto_reply_body', $s['auto_reply_body']) }}</textarea>
-                        </div>
-                    </div>
+                    <div class="form-text mb-0">The confirmation email is sent automatically with our standard wording.</div>
                 </section>
 
                 <section class="fe-panel fb-section">

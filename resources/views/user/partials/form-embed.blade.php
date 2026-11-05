@@ -1,7 +1,7 @@
 @php
     use Illuminate\Support\Facades\Crypt;
     $formId = 'fe-form-' . $form->id . '-' . \Illuminate\Support\Str::random(4);
-    $consentRequired = (bool) $form->setting('consent_required', false);
+    $consentRequired = (bool) $form->setting('consent_required');
 @endphp
 
 @if (!$form->isOpen())
@@ -179,6 +179,7 @@
                     form.dispatchEvent(new CustomEvent('fe-form:success', { bubbles: true, detail: body }));
                     feedback.textContent = body.message || 'Thanks.';
                     if (body.popup) window.feShowPopup(body.popup);
+                    else if (body.redirect) setTimeout(function () { window.location.href = body.redirect; }, 600);
                 } else {
                     form.classList.add('is-error');
                     feedback.textContent = body.message || 'Something went wrong. Please try again.';

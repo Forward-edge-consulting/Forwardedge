@@ -65,7 +65,7 @@ Every response is stored in `form_submissions` before anything else happens. Mai
 
 The footer newsletter, blog sidebar and page-builder form blocks post to `/newsletter/subscribe`, which now stores into the built-in `newsletter` form (or `page-forms` for non-newsletter blocks). Built-in forms cannot be deleted.
 
-Brevo is imported by hand. Admin > Responses exports a CSV (EMAIL, FIRSTNAME, LASTNAME, SMS, other answers, source) containing only people who ticked consent, one row per email. Exported contacts are marked and the last export can be undone. A person’s data can be deleted across all forms on request. Mailchimp is no longer called; its service classes remain until a separate cleanup removes them.
+Brevo is imported by hand. Admin > Responses exports a CSV (EMAIL, FIRSTNAME, LASTNAME, SMS, other answers, source) containing only people who ticked consent, one row per email. Exported contacts are marked and the last export can be undone. A person’s data can be deleted across all forms on request.
 
 Public forms are protected by a hidden field, a minimum fill time, rate limiting and, if `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are set, Cloudflare Turnstile.
 

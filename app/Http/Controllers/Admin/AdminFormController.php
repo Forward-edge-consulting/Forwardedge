@@ -88,12 +88,11 @@ class AdminFormController extends Controller
             'closes_at' => 'nullable|date',
             'submit_label' => 'nullable|string|max:40',
             'success_message' => 'nullable|string|max:300',
+            'redirect_url' => ['nullable', 'string', 'max:190', 'regex:#^/(?!/)[^\s]*$#'],
             'consent_required' => 'nullable|boolean',
             'consent_text' => 'nullable|string|max:500',
             'notify_email' => 'nullable|email|max:190',
             'auto_reply' => 'nullable|boolean',
-            'auto_reply_subject' => 'nullable|string|max:150',
-            'auto_reply_body' => 'nullable|string|max:2000',
             'resource_enabled' => 'nullable|boolean',
             'resource_title' => 'nullable|string|max:120',
             'resource_kind' => 'nullable|in:file,link',
@@ -123,12 +122,11 @@ class AdminFormController extends Controller
         $form->settings = array_merge(Form::defaultSettings(), $resource, [
             'submit_label' => $data['submit_label'] ?? 'Send',
             'success_message' => $data['success_message'] ?? Form::defaultSettings()['success_message'],
+            'redirect_url' => $data['redirect_url'] ?? '',
             'consent_required' => $request->boolean('consent_required'),
             'consent_text' => $data['consent_text'] ?? Form::defaultSettings()['consent_text'],
             'notify_email' => $data['notify_email'] ?? '',
             'auto_reply' => $request->boolean('auto_reply'),
-            'auto_reply_subject' => $data['auto_reply_subject'] ?? Form::defaultSettings()['auto_reply_subject'],
-            'auto_reply_body' => $data['auto_reply_body'] ?? Form::defaultSettings()['auto_reply_body'],
         ]);
     }
 

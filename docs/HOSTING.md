@@ -7,7 +7,7 @@ Application settings cannot identify or clear an exhausted hosting account by th
 - Removed the legacy scheduled failed-mail retry task and its looping command. Failed jobs are no longer automatically resurrected.
 - `composer dev` launches only the local web server and Vite. It does not launch queue listeners or log-tail processes.
 - Local/example `PHP_CLI_SERVER_WORKERS` is 1. Restart an existing `artisan serve` process for a changed setting to take effect. This setting does not change PHP-FPM or Apache process counts.
-- SMTP and Mailchimp calls have 10-second timeouts. Queue jobs have a 25-second timeout and a 60-second retry backoff.
+- SMTP calls have 10-second timeouts. Queue jobs have a 25-second timeout and a 60-second retry backoff.
 - The hero slideshow serves static images and JavaScript. It never polls PHP for slides.
 
 ## Shared hosting: optional bounded queue processing

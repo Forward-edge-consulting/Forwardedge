@@ -48,7 +48,7 @@ class FormSubmissionController extends Controller
 
         $fields = $form->fields ?? [];
         $rules = FormFields::rules($fields);
-        $consentRequired = (bool) $form->setting('consent_required', false);
+        $consentRequired = (bool) $form->setting('consent_required');
         if ($consentRequired) {
             $rules['consent'] = ['accepted'];
         }
@@ -101,7 +101,15 @@ class FormSubmissionController extends Controller
             $submission = $responses->store($form, $rows, $email, $name, $request, $consent);
         }
 
+        $redirect = (string) $form->setting('redirect_url');
+        $redirect = str_starts_with($redirect, '/') && !str_starts_with($redirect, '//') ? $redirect : null;
+
+        if ($redirect && !$request->expectsJson()) {
+            return redirect($redirect)->with('form_success', $form->setting('success_message'));
+        }
+
         return $this->respond($request, 'ok', $form->setting('success_message'), 200, [
+            'redirect' => $redirect,
             'popup' => $responses->popup($form, $submission),
             'booking' => $booking ? ['when' => $bookings->label($booking->starts_at)] : null,
         ]);

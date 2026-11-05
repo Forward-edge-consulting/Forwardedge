@@ -26,10 +26,11 @@ class Form extends Model
         return [
             'submit_label' => 'Send',
             'success_message' => 'Thanks. We have received your response.',
-            'consent_required' => false,
+            'redirect_url' => '',
+            'consent_required' => true,
             'consent_text' => 'I agree to be contacted by Forward Edge and accept the Privacy Policy.',
             'notify_email' => '',
-            'auto_reply' => false,
+            'auto_reply' => true,
             'auto_reply_subject' => 'Thank you for getting in touch',
             'auto_reply_body' => 'We have received your response and will be in touch shortly.',
             // Resource sent after submit (lead magnet). Empty file/link means nothing is sent.

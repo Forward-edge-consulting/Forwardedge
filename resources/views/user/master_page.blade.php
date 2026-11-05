@@ -37,6 +37,9 @@
 
 
     <!-- CSS here -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/fe-loader.css') }}?v=1">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/font-awesome-pro.min.css') }}">
@@ -156,6 +159,40 @@
 
 <body @yield('body_attributes')>
     <div class="body-overlay"></div>
+
+    <!-- Preloader Start -->
+    <div class="tj-preloader is-loading" id="tj-preloader">
+        <div class="tj-preloader-inner">
+            <div class="tj-preloader-ball-wrap">
+                <div class="tj-preloader-ball-inner-wrap">
+                    <div class="tj-preloader-ball-inner">
+                        <div class="tj-preloader-ball"></div>
+                    </div>
+                    <div class="tj-preloader-ball-shadow"></div>
+                </div>
+                <div id="tj-weave-anim" class="tj-preloader-text">Loading...</div>
+            </div>
+        </div>
+        <div class="tj-preloader-overlay"></div>
+    </div>
+    <script>
+        (function () {
+            var el = document.getElementById('tj-preloader');
+            function hide() {
+                if (!el) return;
+                el.classList.remove('is-loading');
+                el.classList.add('is-loaded');
+                el.style.transition = 'opacity .4s';
+                el.style.opacity = '0';
+                setTimeout(function () { el.style.display = 'none'; }, 450);
+                el = null;
+            }
+            window.addEventListener('load', function () { setTimeout(hide, 300); });
+            setTimeout(hide, 4000); // never block the page if an asset hangs
+            window.addEventListener('pageshow', function (e) { if (e.persisted) hide(); });
+        })();
+    </script>
+    <!-- Preloader end -->
 
     <!-- back to top start -->
     <div id="tj-back-to-top"><span id="tj-back-to-top-percentage"></span></div>
@@ -309,7 +346,6 @@
 
                         <!-- JS here -->
                         <script src="{{ asset('frontend/assets/js/jquery.min.js') }}"></script>
-                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
                         <script src="{{ asset('frontend/assets/js/fe-loader.js') }}?v=1"></script>
                         <script src="{{ asset('frontend/assets/js/newsletter-forms.js') }}?v=2"></script>
@@ -329,7 +365,6 @@
                         <script src="{{ asset('frontend/assets/js/appear.min.js') }}"></script>
                         <script src="{{ asset('frontend/assets/js/wow.min.js') }}"></script>
                         <script src="{{ asset('frontend/assets/js/meanmenu.js') }}"></script>
-                        <script src="{{ asset('frontend/assets/js/range-slider.js') }}"></script>
                         <script src="{{ asset('frontend/assets/js/main.js') }}"></script>
 
                         <script>

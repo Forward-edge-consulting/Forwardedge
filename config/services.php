@@ -42,13 +42,6 @@ return [
         'secret'   => env('TURNSTILE_SECRET_KEY'),
     ],
 
-    'mailchimp' => [
-        'key'                => env('MAILCHIMP_KEY'),
-        'server_prefix'      => env('MAILCHIMP_SERVER_PREFIX'),
-        'list_id'            => env('MAILCHIMP_LIST_ID'),
-        'transactional_key'  => env('MAILCHIMP_TRANSACTIONAL_KEY'),
-        'double_opt_in'      => env('MAILCHIMP_DOUBLE_OPT_IN', false),
-    ],
 
     'recaptcha' => [
         'key'    => env('RECAPTCHA_SITE_KEY'),
