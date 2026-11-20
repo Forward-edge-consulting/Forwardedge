@@ -13,11 +13,30 @@ use Illuminate\Validation\ValidationException;
 
 class FormSubmissionController extends Controller
 {
-    public function show(string $slug)
+    public function show(Request $request, string $slug)
     {
         $form = Form::where('slug', $slug)->where('is_system', false)->firstOrFail();
 
-        return view('user.pages.form_page', compact('form'));
+        return view('user.pages.form_page', [
+            'form' => $form,
+            'returnTo' => $this->cameFrom($request),
+        ]);
+    }
+
+    /** The page on this site that linked to the form, as a path, so we can send the visitor back after they submit. */
+    protected function cameFrom(Request $request): ?string
+    {
+        $referer = (string) $request->headers->get('referer');
+        $parts = parse_url($referer);
+        if (!$parts || ($parts['host'] ?? null) !== $request->getHost()) {
+            return null;
+        }
+        $path = ($parts['path'] ?? '/') . (isset($parts['query']) ? '?' . $parts['query'] : '');
+        if ($path === $request->getRequestUri() || str_starts_with($path, '/f/')) {
+            return null;
+        }
+
+        return $this->localPath($path);
     }
 
     public function store(Request $request, string $slug, FormResponses $responses, BookingService $bookings)
@@ -107,8 +126,17 @@ class FormSubmissionController extends Controller
             }
         }
 
-        $redirect = (string) $form->setting('redirect_url');
-        $redirect = str_starts_with($redirect, '/') && !str_starts_with($redirect, '//') ? $redirect : null;
+        // The form's own "go to this page" wins; otherwise a standalone form sends people back to the page they came from.
+        $redirect = $this->localPath((string) $form->setting('redirect_url'))
+            ?? $this->localPath((string) $request->input('_return'));
+
+        $popup = $responses->popup($form, $submission);
+
+        // Redirect first, popup second: keep the popup for the next page, which opens it on arrival.
+        if ($popup && ($redirect || !$request->expectsJson())) {
+            session()->flash('form_popup', $popup);
+            $popup = null;
+        }
 
         if ($redirect && !$request->expectsJson()) {
             return redirect($redirect)->with('form_success', $form->setting('success_message'));
@@ -116,9 +144,17 @@ class FormSubmissionController extends Controller
 
         return $this->respond($request, 'ok', $form->setting('success_message'), 200, [
             'redirect' => $redirect,
-            'popup' => $responses->popup($form, $submission),
+            'popup' => $popup,
             'booking' => $booking ? ['when' => $bookings->label($booking->starts_at)] : null,
         ]);
+    }
+
+    /** A path on this site only: "/x" yes; "//x", "/\x", full URLs and anything else no. */
+    protected function localPath(string $path): ?string
+    {
+        $path = trim($path);
+
+        return preg_match('#^/(?![/\\\\])[^\s\\\\]*$#', $path) ? $path : null;
     }
 
     /** Log the real cause for us; the visitor only sees a calm message, never SQL or stack details. */

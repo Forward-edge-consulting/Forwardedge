@@ -10,6 +10,7 @@
     <form id="{{ $formId }}" class="fe-form" method="POST" action="{{ route('forms.submit', $form->slug) }}" data-fe-form novalidate>
         @csrf
         <input type="hidden" name="_ts" value="{{ Crypt::encryptString((string) time()) }}">
+        @if (!empty($returnTo))<input type="hidden" name="_return" value="{{ $returnTo }}">@endif
         <input type="text" name="hp_field" tabindex="-1" autocomplete="off" class="fe-form-hp" aria-hidden="true">
 
         @foreach ($form->fields as $f)
@@ -76,31 +77,6 @@
 
     @once
         @push('scripts')
-        <dialog class="fe-popup" id="fe-popup" aria-labelledby="fe-popup-title">
-            <div class="fe-popup-body">
-                <span class="fe-popup-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
-                <h2 id="fe-popup-title"></h2>
-                <p data-popup-message></p>
-                <a class="fe-popup-download" data-popup-download href="#"></a>
-                <button type="button" class="fe-popup-close" data-popup-close>Close</button>
-            </div>
-        </dialog>
-        <script>
-        window.feShowPopup = function (p) {
-            var d = document.getElementById('fe-popup');
-            if (!d || !d.showModal) return;
-            d.querySelector('#fe-popup-title').textContent = p.title || '';
-            d.querySelector('[data-popup-message]').textContent = p.message || '';
-            var a = d.querySelector('[data-popup-download]');
-            a.href = p.download_url; a.textContent = 'Download ' + (p.resource_title || 'resource');
-            if (!d.open) d.showModal();
-        };
-        document.addEventListener('click', function (e) {
-            var d = document.getElementById('fe-popup');
-            if (!d) return;
-            if (e.target.closest('[data-popup-close]') || e.target === d) d.close();
-        });
-        </script>
         <script>
         (function () {
             function load(picker) {
@@ -178,8 +154,9 @@
                     form.reset(); form.classList.add('is-success'); if (window.feReloadSlots) window.feReloadSlots(form);
                     form.dispatchEvent(new CustomEvent('fe-form:success', { bubbles: true, detail: body }));
                     feedback.textContent = body.message || 'Thanks.';
-                    if (body.popup) window.feShowPopup(body.popup);
-                    else if (body.redirect) setTimeout(function () { window.location.href = body.redirect; }, 600);
+                    // Redirect first: the server keeps the popup for the next page, which opens it on arrival.
+                    if (body.redirect) setTimeout(function () { window.location.href = body.redirect; }, 600);
+                    else if (body.popup && window.feShowPopup) window.feShowPopup(body.popup);
                 } else {
                     form.classList.add('is-error');
                     feedback.textContent = body.message || 'Something went wrong. Please try again.';

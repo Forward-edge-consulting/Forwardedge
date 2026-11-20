@@ -421,6 +421,7 @@
                         </script>
 
 
+                        @include('user.partials.form-popup')
                         @stack('scripts')
 </body>
 

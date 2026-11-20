@@ -125,7 +125,9 @@ class FormResponses
         return [
             'title' => (string) $form->setting('popup_title'),
             'message' => str_replace('{email}', (string) $submission->email, (string) $form->setting('popup_message')),
-            'resource_title' => (string) ($form->setting('resource_title') ?: 'Download'),
+            'resource_title' => (string) $form->setting('resource_title', ''),
+            // One clear label: "Download Security checklist", or "Download your resource" when untitled.
+            'button' => ($title = trim((string) $form->setting('resource_title', ''))) !== '' ? 'Download ' . $title : 'Download your resource',
             'download_url' => route('forms.resource', $submission->download_token),
         ];
     }

@@ -42,9 +42,28 @@ class Form extends Model
             'resource_url' => '',
             'resource_email_subject' => 'Your resource from Forward Edge',
             'resource_email_body' => 'Thank you for your interest. Your resource is ready to download using the button below.',
-            'popup_title' => 'Check your email',
-            'popup_message' => 'We have sent your resource to {email}. If it does not arrive in a few minutes, check your spam folder.',
+            'popup_title' => 'Your resource is ready',
+            'popup_message' => 'Download it now with the button below. We have also emailed a copy to {email}.',
         ];
+    }
+
+    /** Earlier default wording. A form still carrying it was never customised, so it gets the current default. */
+    public const LEGACY_DEFAULTS = [
+        'popup_title' => 'Check your email',
+        'popup_message' => 'We have sent your resource to {email}. If it does not arrive in a few minutes, check your spam folder.',
+    ];
+
+    /** Stored settings over the defaults, with untouched old default wording replaced by the current one. */
+    public function resolvedSettings(): array
+    {
+        $s = array_merge(static::defaultSettings(), $this->settings ?? []);
+        foreach (static::LEGACY_DEFAULTS as $key => $old) {
+            if (($s[$key] ?? null) === $old) {
+                $s[$key] = static::defaultSettings()[$key];
+            }
+        }
+
+        return $s;
     }
 
     protected static function booted(): void
@@ -88,8 +107,13 @@ class Form extends Model
 
     public function setting(string $key, mixed $default = null): mixed
     {
-        return ($this->settings[$key] ?? null) !== null && ($this->settings[$key] ?? '') !== ''
-            ? $this->settings[$key]
+        $value = $this->settings[$key] ?? null;
+        if ($value !== null && $value !== '' && $value === (static::LEGACY_DEFAULTS[$key] ?? null)) {
+            $value = null;
+        }
+
+        return $value !== null && $value !== ''
+            ? $value
             : ($default ?? (static::defaultSettings()[$key] ?? null));
     }
 

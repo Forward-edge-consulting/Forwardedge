@@ -2,7 +2,7 @@
 @php
     use App\Support\FormFields;
     $isNew = !$form->exists;
-    $s = array_merge(\App\Models\Form::defaultSettings(), $form->settings ?? []);
+    $s = $form->resolvedSettings();
 @endphp
 @section('title', ($isNew ? 'New form' : $form->name) . ' | Forward Edge')
 
@@ -92,7 +92,7 @@
                         <div class="col-md-7">
                             <label class="form-label" for="fb-redirect">Go to this page afterwards</label>
                             <input id="fb-redirect" name="redirect_url" class="form-control" value="{{ old('redirect_url', $s['redirect_url']) }}" maxlength="190" placeholder="/thank-you">
-                            <div class="form-text">Optional. A page on this site, starting with /. Leave empty to stay on the page and show the thank-you message. Forms that give a download stay on the page.</div>
+                            <div class="form-text">Optional. A page on this site, starting with /. Leave empty to show the thank-you message (visitors on the form's own link go back to the page they came from). With a download, visitors are taken there first and the download popup opens on that page.</div>
                         </div>
                     </div>
                 </section>

@@ -1,7 +1,12 @@
-.fe-form-page{padding:48px 0 96px;background:#fff}
-.fe-form-wrap{max-width:600px}
-.fe-form-wrap h1{font-size:clamp(30px,3.4vw,42px);line-height:1.1;letter-spacing:-.03em;font-weight:600;color:#0c1e21;margin:0 0 12px}
-.fe-form-intro{font-size:17px;color:#364e52;margin:0 0 28px;max-width:52ch}
+/* Standalone form page (/f/{slug}): one centred card on a quiet surface, so the form reads like a dialog but stays a shareable page. */
+.fe-form-page{padding:64px 0 112px;background:#f2f5f5}
+.fe-form-card{max-width:560px;margin:0 auto;padding:40px 40px 36px;background:#fff;border:1px solid rgba(12,30,33,.08);border-radius:20px;box-shadow:0 1px 2px rgba(12,30,33,.04),0 24px 48px -28px rgba(12,30,33,.22)}
+.fe-form-card-head{padding-bottom:24px;margin-bottom:28px;border-bottom:1px solid rgba(12,30,33,.08)}
+.fe-form-card h1{font-size:clamp(26px,2.6vw,32px);line-height:1.15;letter-spacing:-.02em;font-weight:600;color:#0c1e21;margin:0}
+.fe-form-intro{font-size:16px;line-height:1.55;color:#4a5f62;margin:10px 0 0;max-width:52ch}
+.fe-form-card .fe-form{gap:18px}
+.fe-form-card .fe-form-button{align-self:stretch;width:100%;margin-top:4px}
+@media(max-width:575px){.fe-form-page{padding:24px 0 72px}.fe-form-card{padding:28px 20px 24px;border-radius:16px}.fe-form-card-head{padding-bottom:20px;margin-bottom:22px}}
 .fe-form{display:flex;flex-direction:column;gap:20px}
 .fe-form-hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
 .fe-form-field fieldset{border:0;padding:0;margin:0;min-width:0}

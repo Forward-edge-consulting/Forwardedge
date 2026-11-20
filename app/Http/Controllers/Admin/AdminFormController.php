@@ -88,7 +88,7 @@ class AdminFormController extends Controller
             'closes_at' => 'nullable|date',
             'submit_label' => 'nullable|string|max:40',
             'success_message' => 'nullable|string|max:300',
-            'redirect_url' => ['nullable', 'string', 'max:190', 'regex:#^/(?!/)[^\s]*$#'],
+            'redirect_url' => ['nullable', 'string', 'max:190', 'regex:#^/(?![/\\\\])[^\s\\\\]*$#'],
             'consent_required' => 'nullable|boolean',
             'consent_text' => 'nullable|string|max:500',
             'notify_email' => 'nullable|email|max:190',
